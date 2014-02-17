@@ -4,7 +4,7 @@ nodecap
 ICAP server framework for node.js - create custom HTTP proxy filters for Squid, etc. **nodecap** implements the [ICAP protocol](http://www.icap-forum.org/documents/specification/rfc3507.txt).
 
 ## Use Case
-[Squid](http://www.squid-cache.org/) and other HTTP proxy servers typically provide only basic levels of filtering. **nodecap** implements the ICAP protocol, allowing for dynamic, per-request filtering and modification of requests and responses. With squid, for example, you can either whitelist or blacklist domains. 
+[Squid](http://www.squid-cache.org/) and other HTTP proxy servers typically provide only basic levels of filtering. **nodecap** implements the ICAP protocol, allowing for dynamic, per-request filtering and modification of requests and responses. 
 
 Examples:
 
