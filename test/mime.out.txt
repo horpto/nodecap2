@@ -1,0 +1,18 @@
+ICAP/1.0 200 OK
+Host: icap.example.org
+Encapsulated: res-hdr=0, res-body=159
+Date: Mon, 10 Jan 2000  09:55:21 GMT
+ISTag: "W3E4R7U9-L2E4-2"
+Server: Nodecap/1.0
+
+HTTP/1.1 200 OK
+Date: Mon, 10 Jan 2000  09:55:21 GMT
+Server: Apache/1.3.6 (Unix)
+ETag: "63840-1ab7-378d415b"
+Content-Type: text/html
+Content-Length: 51
+
+44
+<!DOCTYPE html><html><head></head><body><h1>Title</h1></body></html>
+0
+

@@ -1,0 +1,36 @@
+ICAP/1.0 200 OK
+Host: icap-server.net
+Encapsulated: req-hdr=0, req-body=141
+Date: Fri, 24 Jan 2014 00:20:14 GMT
+ISTag: NODECAP-1390522814321
+Server: Nodecap/1.0
+
+POST http://allowed.com HTTP/1.1
+Host: www.origin-server.com
+Accept: text/html, text/plain
+Accept-Encoding: compress
+Pragma: no-cache
+
+1e
+I am posting this information.
+1f
+I was posting that information.
+0
+
+ICAP/1.0 200 OK
+Host: icap-server.net
+Encapsulated: res-hdr=0, res-body=131
+Date: Fri, 24 Jan 2014 00:20:14 GMT
+ISTag: NODECAP-1390522814321
+Server: Nodecap/1.0
+
+HTTP/1.1 403 Forbidden
+Host: www.origin-server.com
+Accept: text/html, text/plain
+Accept-Encoding: compress
+Pragma: no-cache
+
+2
+NO
+0
+

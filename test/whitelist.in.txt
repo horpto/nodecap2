@@ -1,0 +1,32 @@
+REQMOD icap://icap-server.net/request ICAP/1.0
+Host: icap-server.net
+Encapsulated: req-hdr=0, req-body=137
+
+POST http://allowed.com HTTP/1.1
+Host: www.origin-server.com
+Accept: text/html, text/plain
+Accept-Encoding: compress
+Pragma: no-cache
+
+1e
+I am posting this information.
+1f
+I was posting that information.
+0
+
+REQMOD icap://icap-server.net/request ICAP/1.0
+Host: icap-server.net
+Encapsulated: req-hdr=0, req-body=137
+
+POST http://blocked.com HTTP/1.1
+Host: www.origin-server.com
+Accept: text/html, text/plain
+Accept-Encoding: compress
+Pragma: no-cache
+
+1e
+I am posting this information.
+1f
+I was posting that information.
+0
+

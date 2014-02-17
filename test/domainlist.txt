@@ -1,0 +1,2 @@
+.wildcard.com
+fixed.com

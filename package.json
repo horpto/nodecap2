@@ -1,0 +1,42 @@
+{
+  "name": "nodecap",
+  "version": "0.0.1",
+  "description": "ICAP server framework for node.js - create custom HTTP proxy filters for Squid, etc.",
+  "main": "index.js",
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "dependencies": {
+    "eventemitter2": "~0.4.13",
+    "datauri": "~0.4.0",
+    "hexy": "~0.2.5",
+    "lodash": "~2.4.1",
+    "mmmagic": "~0.3.5",
+    "optimist": "~0.6.0",
+    "q": "~1.0.0"
+  },
+  "devDependencies": {
+    "tap": "~0.4.8"
+  },
+  "scripts": {
+    "test": "tap ./test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/josephsavona/nodecap"
+  },
+  "keywords": [
+    "nodejs",
+    "icap",
+    "http",
+    "proxy",
+    "filter",
+    "squid"
+  ],
+  "author": "Joseph Savona <joe@josephsavona.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/josephsavona/nodecap/issues"
+  }
+}

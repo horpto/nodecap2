@@ -1,0 +1,37 @@
+ICAP/1.0 200 OK
+Host: icap-server.net
+Encapsulated: req-hdr=0, req-body=147
+Date: Fri, 24 Jan 2014 00:20:14 GMT
+ISTag: NODECAP-1390522814321
+Server: Nodecap/1.0
+
+POST /origin-resource/form.pl HTTP/1.1
+Host: www.origin-server.com
+Accept: text/html, text/plain
+Accept-Encoding: compress
+Pragma: no-cache
+
+1e
+I am posting this information.
+1f
+I was posting that information.
+0
+
+ICAP/1.0 200 OK
+Host: icap.example.org
+Encapsulated: res-hdr=0, res-body=159
+Date: Fri, 24 Jan 2014 00:20:14 GMT
+ISTag: NODECAP-1390522814321
+Server: Nodecap/1.0
+
+HTTP/1.1 200 OK
+Date: Mon, 10 Jan 2000 09:52:22 GMT
+Server: Apache/1.3.6 (Unix)
+ETag: "63840-1ab7-378d415b"
+Content-Type: text/html
+Content-Length: 51
+
+33
+Some body that is 51 charcters longs 12345678901234
+0
+
