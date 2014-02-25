@@ -166,3 +166,14 @@ test('domainlist should expire domains', function(t) {
   t.end();
 });
 
+test('domainlist should return domains as array', function(t) {
+  var domains = new DomainList();
+  domains.add('fixed.com');
+  domains.add('.wildcard.com');
+  var domainsArray = domains.toArray();
+  t.equal(domainsArray.length, 3, 'should be 3 domains');
+  t.ok(domainsArray.indexOf('fixed.com') >= 0, 'should have fixed input in toArray()');
+  t.ok(domainsArray.indexOf('wildcard.com') >= 0, 'should have fixed version of wildcard input in toArray()');
+  t.ok(domainsArray.indexOf('.wildcard.com') >= 0, 'should have wildcard input in toArray()');
+  t.end();
+});

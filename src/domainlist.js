@@ -130,6 +130,14 @@ DomainList.prototype = {
       return existingDomain !== wildcard && existingDomain !== bakfixed;
     });
     delete this.domainExpiry[fixed];
+  },
+
+  toArray: function() {
+    var domains = [];
+    this.matchDomains.forEach(function(domain) {
+      domains.push(reverse(domain));
+    });
+    return domains;
   }
 };
 

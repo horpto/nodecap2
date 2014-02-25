@@ -1,6 +1,6 @@
 {
   "name": "nodecap",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "ICAP server framework for node.js - create custom HTTP proxy filters for Squid, etc.",
   "main": "index.js",
   "directories": {
