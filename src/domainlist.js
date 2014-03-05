@@ -66,13 +66,11 @@ DomainList.prototype = {
       for (nearIdx = -(nearIdx+1); nearIdx >= 0; nearIdx -= 1) {
         part = this.matchDomains[nearIdx];
         if (wildcardEndChars.indexOf(part[part.length - 1]) < 0) {
-          console.log('searching: not wildcard domain=%s current=%s', domain, part);
           continue;
         }
         part = part.slice(0, -1);
         if (reversed.indexOf(part) !== 0) {
-          console.log('searching: wildcard is not prefix domain=%s current=%s', domain, part);
-          break;
+          continue;
         } else {
           match = part;
           break;
@@ -84,7 +82,6 @@ DomainList.prototype = {
     }
     // non-expiring domain or not-yet expired domain
     if (!(expireDomain in this.domainExpiry) || this.domainExpiry[expireDomain] >= now) {
-      console.log('searching: found domain=%s current=%s', domain, part);
       return true;
     }
     // expired domain
