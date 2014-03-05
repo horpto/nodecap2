@@ -139,6 +139,43 @@ test('domainlist should handle domains beyond the sorted match indexes', functio
   t.end();
 });
 
+test('domainlist should handle adding subdomains of wildcard domains', function(t) {
+  var domains = new DomainList();
+  domains.add('a.com');
+  domains.add('b.com');
+  domains.add('.b.com');
+  domains.add('fixed.b.com');
+  domains.add('.wildcard.b.com');
+  domains.add('c.com');
+
+  console.dir(domains.toArray());
+  console.dir(domains.matchDomains);
+
+  t.ok(domains.contains('a.com'), 'should include lowest domain');
+  t.ok(domains.contains('c.com'), 'should include hightest domain');
+  t.ok(domains.contains('b.com'), 'should include top-level wildcard domain');
+  t.ok(domains.contains('sub.b.com'), 'should include sub domain of wildcard domain');
+  t.ok(domains.contains('aixed.b.com'), 'should include lower sub domain of wildcard domain');
+  t.ok(domains.contains('zixed.b.com'), 'should include higher sub domain of wildcard domain');
+  t.ok(domains.contains('sub.wildcard.b.com'), 'should include sub of wildcard wildcard');
+
+
+  domains.add('e.com');
+  domains.add('bbb.e.com');
+  domains.add('.f.com');
+  domains.add('bbb.g.com');
+  domains.add('g.com');
+  domains.add('bbb.i.com');
+
+  t.notOk(domains.contains('aaa.e.com'), 'should not contain subdomain if not parent wildcard');
+  t.notOk(domains.contains('aaa.g.com'), 'should not container lower subdomain if lower non-parent wildcard');
+  t.notOk(domains.contains('zzz.g.com'), 'should not container higher subdomain if lower non-parent wildcard');
+  t.notOk(domains.contains('aaa.i.com'), 'should not container lower subdomain if lower non-parent fixed');
+  t.notOk(domains.contains('zzz.i.com'), 'should not container higher subdomain if lower non-parent fixed');
+
+  t.end();
+});
+
 test('domainlist should expire domains', function(t) {
   var now = Date.now();
   var nowFn = Date.now;

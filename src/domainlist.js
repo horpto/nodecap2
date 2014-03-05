@@ -34,9 +34,11 @@ var binaryIndexNear = function(arr, searchElement) {
   return -(maxIndex <= 0 ? 1 : (maxIndex + 1));
 };
 
+var wildcardStartChar = '\0';
+var wildcardEndChar = '\xFF';
+var wildcardEndChars = [wildcardStartChar, wildcardEndChar];
 
 var DomainList = module.exports = function(domainList) {
-  var ix;
   domainList = domainList || [];
   this.matchDomains = [];
   this.domainExpiry = {};
@@ -47,7 +49,7 @@ DomainList.prototype = {
   constructor: DomainList,
 
   contains: function(domain) {
-    var nearIdx, reversed, expireDomain, now;
+    var nearIdx, reversed, expireDomain, now, part, match;
 
     if (this.matchDomains.length === 0) {
       return false;
@@ -57,16 +59,32 @@ DomainList.prototype = {
     // check wildcard domains by comparing the reverse of the string
     reversed = reverse(domain);
     expireDomain = domain[0] === '.' ? domain.slice(1) : domain;
+    match = null;
 
     nearIdx = binaryIndexNear(this.matchDomains, reversed);
     if (nearIdx <= 0) {
-      var part = this.matchDomains[-(nearIdx + 1)];
-      if (part[part.length - 1] !== '.' || reversed.indexOf(part) !== 0) {
+      for (nearIdx = -(nearIdx+1); nearIdx >= 0; nearIdx -= 1) {
+        part = this.matchDomains[nearIdx];
+        if (wildcardEndChars.indexOf(part[part.length - 1]) < 0) {
+          console.log('searching: not wildcard domain=%s current=%s', domain, part);
+          continue;
+        }
+        part = part.slice(0, -1);
+        if (reversed.indexOf(part) !== 0) {
+          console.log('searching: wildcard is not prefix domain=%s current=%s', domain, part);
+          break;
+        } else {
+          match = part;
+          break;
+        }
+      }
+      if (!match) {
         return false;
       }
     }
     // non-expiring domain or not-yet expired domain
     if (!(expireDomain in this.domainExpiry) || this.domainExpiry[expireDomain] >= now) {
+      console.log('searching: found domain=%s current=%s', domain, part);
       return true;
     }
     // expired domain
@@ -89,18 +107,30 @@ DomainList.prototype = {
   },
 
   add: function(domain, ttl, skipSort) {
-    var expireDomain, now;
+    var expireDomain, rev, revExpire;
     domain = (domain || '').trim();
     if (!domain) {
       return;
     }
+    rev = reverse(domain);
+
     if (domain[0] === '.') {
       expireDomain = domain.slice(1);
-      this.matchDomains.push(reverse(expireDomain));
+      revExpire = reverse(expireDomain);
+
+      if (binaryIndexNear(this.matchDomains, revExpire) < 0) {
+        this.matchDomains.push(revExpire);
+      }
+      if (binaryIndexNear(this.matchDomains, rev + wildcardStartChar) < 0) {
+        this.matchDomains.push(rev + wildcardStartChar);
+        this.matchDomains.push(rev + wildcardEndChar);
+      }
     } else {
       expireDomain = domain;
+      if (binaryIndexNear(this.matchDomains, rev) < 0) {
+        this.matchDomains.push(rev);
+      }
     }
-    this.matchDomains.push(reverse(domain));
 
     if (ttl > 0) {
       this.domainExpiry[expireDomain] = Date.now() + ttl;
@@ -112,22 +142,24 @@ DomainList.prototype = {
   },
 
   remove: function(domain) {
-    var fixed, wildcard, bakfixed;
+    var fixed, wildcard;
+    var toRemove = [];
     domain = (domain || '').trim();
     if (!domain) {
       return;
     }
     if (domain[0] === '.') {
       fixed = domain.slice(1);
-      bakfixed = reverse(fixed);
-      wildcard = reverse(domain);
+      wildcard = domain;
     } else {
       fixed = domain;
-      bakfixed = reverse(fixed);
-      wildcard = reverse('.' + domain);
+      wildcard = '.' + domain;
     }
+    toRemove.push(reverse(fixed));
+    toRemove.push(reverse(wildcardStartChar + wildcard));
+    toRemove.push(reverse(wildcardEndChar + wildcard));
     this.matchDomains = this.matchDomains.filter(function(existingDomain) {
-      return existingDomain !== wildcard && existingDomain !== bakfixed;
+      return toRemove.indexOf(existingDomain) < 0;
     });
     delete this.domainExpiry[fixed];
   },
@@ -135,7 +167,11 @@ DomainList.prototype = {
   toArray: function() {
     var domains = [];
     this.matchDomains.forEach(function(domain) {
-      domains.push(reverse(domain));
+      if (domain[domain.length - 1] === wildcardStartChar) {
+        domains.push(reverse(domain.slice(0,-1)));
+      } else if (domain[domain.length - 1] !== wildcardEndChar) {
+        domains.push(reverse(domain));
+      }
     });
     return domains;
   }
