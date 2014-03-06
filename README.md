@@ -35,7 +35,7 @@ The basics:
 
 ## API
 
-Consult your proxies documentation to understand how to configure the proxy to talk to your ICAP server. It is recommended that you configure requests and responses to be sent to different paths (resource endpoints) on your ICAP server. 
+Consult your proxy's documentation to understand how to configure the proxy to talk to your ICAP server. It is recommended that you configure requests and responses to be sent to different paths (resource endpoints) on your ICAP server. 
 
 The best documentation is the example and tests, which demonstrate example ICAP requests, ICAP handling, and ICAP responses.
 
