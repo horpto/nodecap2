@@ -27,81 +27,105 @@ function ICAPServer(options) {
 
   this.errorCallbacks = [];
   this.on('error', function(err, icapReq, icapRes) {
-    console.log('error');
     var ix, cbs;
-    ix = 0;
-    cbs = this.errorCallbacks;
-    function next() {
-      var fn = cbs[ix++];
-      if (!fn || icapRes.done) {
-        return;
+    try {
+      ix = 0;
+      cbs = this.errorCallbacks;
+      function next() {
+        var fn = cbs[ix++];
+        if (!fn || icapRes.done) {
+          return;
+        }
+        fn.call(this, err, icapReq, icapRes, next);
       }
-      fn.call(this, err, icapReq, icapRes, next);
+      next();
+    } catch (e) {
+      console.error(e);
+      try {
+        icapRes.end();
+      } catch (ee) {
+        console.error(ee);
+      }
+    } finally {
+      console.log('ERROR - %s - %s', (icapRes.icapStatus || [null,null,null]).join(' '), err.message || 'undefined');
     }
-    next();
   }.bind(this));
 
   this.optionsCallbacks = [];
   this.on('icapOptions', function(icapReq, icapRes) {
-    console.log('icapOptions');
     var ix, cbs, pathname;
-    ix = 0;
-    cbs = this.optionsCallbacks;
-    pathname = icapReq.parsedUri.pathname;
-    function next() {
-      var fn = cbs[ix++];
-      if (!fn || icapRes.done) {
-        return;
+    try {
+      ix = 0;
+      cbs = this.optionsCallbacks;
+      pathname = icapReq.parsedUri.pathname;
+      function next() {
+        var fn = cbs[ix++];
+        if (!fn || icapRes.done) {
+          return;
+        }
+        if (!fn[0] || fn[0].test(pathname)) {
+          fn[1].call(this, icapReq, icapRes, next);
+        } else {
+          next();
+        }
       }
-      if (!fn[0] || fn[0].test(pathname)) {
-        fn[1].call(this, icapReq, icapRes, next);
-      } else {
-        next();
-      }
+      next();
+      console.log('OPTIONS -  %s %s', (icapRes.icapStatus || [null,null,null]).join(' '), (icapRes.httpMethod || [null,null,null]).join(' '));
+    } catch (e) {
+      this.emit('error', e, icapReq, icapRes);
     }
-    next();
   }.bind(this));
 
   this.requestCallbacks = [];
   this.on('httpRequest', function(icapReq, icapRes, req, res) {
-    console.log('httpRequest');
     var ix, cbs, host;
-    ix = 0;
-    cbs = this.requestCallbacks;
-    host = req.parsedUri.hostname;
-    function next() {
-      var fn = cbs[ix++];
-      if (!fn || icapRes.done) {
-        return;
+    try {
+      console.log('REQMOD - %s - %s %s - %s', (icapRes.icapStatus || [null,null,null]).join(' '), req.method, req.uri, (icapRes.httpMethod || [null,null,null]).join(' '));
+      ix = 0;
+      cbs = this.requestCallbacks;
+      host = req.parsedUri.hostname;
+      function next() {
+        var fn = cbs[ix++];
+        if (!fn || icapRes.done) {
+          return;
+        }
+        if (!fn[0] || fn[0].contains(host)) {
+          fn[1].call(this, icapReq, icapRes, req, res, next);
+        } else {
+          next();
+        }
       }
-      if (!fn[0] || fn[0].contains(host)) {
-        fn[1].call(this, icapReq, icapRes, req, res, next);
-      } else {
-        next();
-      }
+      next();
+      console.log('REQMOD - %s - %s %s - %s', (icapRes.icapStatus || [null,null,null]).join(' '), req.method, req.uri, (icapRes.httpMethod || [null,null,null]).join(' '));
+    } catch (e) {
+      this.emit('error', e, icapReq, icapRes);
     }
-    next();
   }.bind(this));
 
   this.responseCallbacks = [];
   this.on('httpResponse', function(icapReq, icapRes, req, res) {
-    console.log('httpResponse');
     var ix, cbs, host;
-    ix = 0;
-    cbs = this.responseCallbacks;
-    host = req.parsedUri.hostname;
-    function next() {
-      var fn = cbs[ix++];
-      if (!fn || icapRes.done) {
-        return;
+    try {
+      console.log('RESPMOD - %s - %s %s - %s', (icapRes.icapStatus || [null,null,null]).join(' '), req.method, req.uri, (icapRes.httpMethod || [null,null,null]).join(' '));
+      ix = 0;
+      cbs = this.responseCallbacks;
+      host = req.parsedUri.hostname;
+      function next() {
+        var fn = cbs[ix++];
+        if (!fn || icapRes.done) {
+          return;
+        }
+        if (!fn[0] || fn[0].contains(host)) {
+          fn[1].call(this, icapReq, icapRes, req, res, next);
+        } else {
+          next();
+        }
       }
-      if (!fn[0] || fn[0].contains(host)) {
-        fn[1].call(this, icapReq, icapRes, req, res, next);
-      } else {
-        next();
-      }
+      next();
+      console.log('RESPMOD - %s - %s %s - %s', (icapRes.icapStatus || [null,null,null]).join(' '), req.method, req.uri, (icapRes.httpMethod || [null,null,null]).join(' '));
+    } catch (e) {
+      this.emit('error', e, icapReq, icapRes);
     }
-    next();
   }.bind(this));
 }
 

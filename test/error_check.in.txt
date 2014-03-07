@@ -1,0 +1,36 @@
+RESPMOD icap://icap.example.org/response ICAP/1.0
+Host: icap.example.org
+Encapsulated: req-hdr=0, res-hdr=137, res-body=296
+
+GET /origin-resource HTTP/1.1
+Host: www.origin-server.com
+Accept: text/html, text/plain, image/gif
+Accept-Encoding: gzip, compress
+
+HTTP/1.1 200 OK
+Date: Mon, 10 Jan 2000 09:52:22 GMT
+Server: Apache/1.3.6 (Unix)
+ETag: "63840-1ab7-378d415b"
+Content-Type: text/html
+Content-Length: 51
+
+33
+Some body that is 51 charcters longs 12345678901234
+0
+
+REQMOD icap://icap-server.net/request ICAP/1.0
+Host: icap-server.net
+Encapsulated: req-hdr=0, req-body=147
+
+POST /origin-resource/form.pl HTTP/1.1
+Host: www.origin-server.com
+Accept: text/html, text/plain
+Accept-Encoding: compress
+Pragma: no-cache
+
+1e
+I am posting this information.
+1f
+I was posting that information.
+0
+

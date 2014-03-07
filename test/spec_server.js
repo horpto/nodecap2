@@ -67,7 +67,8 @@ module.exports = function(server) {
 
   // HANDLE ERRORS
   server.error(function(err, icapReq, icapRes, next) {
-    console.error(err.message, err.stack || 'no stack trace');
+    // console.error(err);
+    // console.error(err.message, err.stack || 'no stack trace');
     if (!icapRes.done) {
       icapRes.setIcapStatusCode(500);
       icapRes.writeHeaders(false);

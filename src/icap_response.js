@@ -5,10 +5,10 @@ var Response = require('./response');
 var codes = require('./codes');
 var currentISTag = "NODECAP-" + (new Date()).getTime();
 var crlf = '\r\n';
-var debug = require('optimist').argv.log;
 
-var ICAPResponse = module.exports = function(stream, id) {
+var ICAPResponse = module.exports = function(stream, id, options) {
   Response.call(this);
+  this.debug = options && options.debug;
   this.stream = stream;
   this.id = id;
   this.protocol = 'ICAP';
@@ -53,7 +53,12 @@ _.extend(ICAPResponse.prototype, {
   hasFilter: function() {
     return typeof this.filter === 'function';
   },
-  setFilter: function(filterFn) {
+  setFilter: function(isBuffer, filterFn) {
+    if (typeof isBuffer === 'function') {
+      filterFn = isBuffer;
+      isBuffer = false;
+    }
+    this.buffer = isBuffer ? new Buffer(0) : null;
     this.filter = filterFn;
   },
   writeHeaders: function(hasBody) {
@@ -98,18 +103,18 @@ _.extend(ICAPResponse.prototype, {
     }
 
     // icap status/headers
-    if (debug) process.stdout.write(this.icapStatus.join(' '));
+    if (this.debug) process.stdout.write(this.icapStatus.join(' '));
     stream.write(this.icapStatus.join(' '));
-    if (debug) process.stdout.write(crlf);
+    if (this.debug) process.stdout.write(crlf);
     stream.write(crlf);
     _.each(this.icapHeaders, function(value, key) {
-      if (debug) process.stdout.write(key + ': ' + value + crlf);
+      if (this.debug) process.stdout.write(key + ': ' + value + crlf);
       stream.write(key + ': ' + value + crlf);
     }.bind(this));
-    if (debug) process.stdout.write(crlf);
+    if (this.debug) process.stdout.write(crlf);
     stream.write(crlf);
 
-    if (debug) process.stdout.write(headerBlock);
+    if (this.debug) process.stdout.write(headerBlock);
     stream.write(headerBlock);
   },
   allowUnchanged: function(icapResponse) {
@@ -122,17 +127,21 @@ _.extend(ICAPResponse.prototype, {
   continuePreview: function() {
     if (!this.ieof) {
       var code = this._getCode(100);
-      if (debug) process.stdout.write(code.join(' '));
+      if (this.debug) process.stdout.write(code.join(' '));
       this.stream.write(code.join(' '));
-      if (debug) process.stdout.write(crlf);
+      if (this.debug) process.stdout.write(crlf);
       this.stream.write(crlf);
-      if (debug) process.stdout.write(crlf);
+      if (this.debug) process.stdout.write(crlf);
       this.stream.write(crlf);
     }
   },
   _write: function(data) {
     var tmp;
     if (data) {
+      if (this.buffer) {
+        this.buffer = Buffer.concat([this.buffer, data], this.buffer.length + data.length);
+        return;
+      }
       if (data.length > 4096) {
         tmp = data.slice(0, 4096);
         data = data.slice(4096);
@@ -143,20 +152,31 @@ _.extend(ICAPResponse.prototype, {
         }
         return;
       }
+      // filter output and abort if no reponse
+      // note: this allows filter authors to buffer data internally 
+      // and call response.send(data) once filter receives a `null`
       if (this.filter) {
         data = this.filter(data);
       }
       // ensure that data is in buffer form for accurate length measurements
       // and to avoid encoding issues when writing
       tmp = data instanceof Buffer ? data : new Buffer(data);
-      if (debug) process.stdout.write(hexy.hexy(tmp.length.toString(16) + '\r\n'));
+      if (this.debug) process.stdout.write(hexy.hexy(tmp.length.toString(16) + '\r\n'));
       this.stream.write(tmp.length.toString(16) + '\r\n');
-      if (debug) process.stdout.write(hexy.hexy(tmp));
+      if (this.debug) process.stdout.write(hexy.hexy(tmp));
       this.stream.write(tmp);
-      if (debug) process.stdout.write(hexy.hexy('\r\n'));
+      if (this.debug) process.stdout.write(hexy.hexy('\r\n'));
       this.stream.write('\r\n');
     } else {
-      if (debug) process.stdout.write(hexy.hexy('0\r\n\r\n'));
+      // alert the filter that stream is over
+      // can return data to write it before the stream is ended
+      if (this.filter && this.buffer) {
+        data = this.filter(this.buffer);
+        this.filter = null;
+        this.buffer = null;
+        this._write(data);
+      }
+      if (this.debug) process.stdout.write(hexy.hexy('0\r\n\r\n'));
       this.stream.write('0\r\n\r\n');
     }
   },

@@ -28,11 +28,10 @@ var states = {
  *    Encapsulates handling of an ICAP client request.
  */
 function ICAPHandler(socket, emitter, options) {
-  options = options || {};
   this.emitter = emitter;
   this.socket = socket;
-  this.options = options;
-  this.debug = !!options.debug;
+  this.options = options || {};
+  this.debug = !!this.options.debug;
   this.buffer = new Buffer(0);
   this.bufferIndex = 0;
   this.icapBodyStartIndex = 0;
@@ -67,7 +66,7 @@ ICAPHandler.prototype = {
 
     socket.on('timeout', function() {
       if (this.debug) console.log(this.id, '[socket:timeout]');
-    })
+    });
 
     socket.on('close', function() {
       if (this.debug) console.log(this.id, '[socket:close]');
@@ -105,7 +104,7 @@ ICAPHandler.prototype = {
     this.id = id;
     this.state = states.icapmethod;
     this.icapRequest = new ICAPRequest(this.id);
-    this.icapResponse = new ICAPResponse(this.options.responseStream || this.socket, this.id);
+    this.icapResponse = new ICAPResponse(this.options.responseStream || this.socket, this.id, this.options);
     this.httpRequest = new HTTPRequest();
     this.httpResponse = new HTTPResponse();
 
