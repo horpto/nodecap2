@@ -80,7 +80,6 @@ function ICAPServer(options) {
   this.on('httpRequest', function(icapReq, icapRes, req, res) {
     var ix, cbs, host;
     try {
-      console.log('REQMOD - %s - %s %s - %s', (icapRes.icapStatus || [null,null,null]).join(' '), req.method, req.uri, (icapRes.httpMethod || [null,null,null]).join(' '));
       ix = 0;
       cbs = this.requestCallbacks;
       host = req.parsedUri.hostname;
@@ -96,7 +95,7 @@ function ICAPServer(options) {
         }
       }
       next();
-      console.log('REQMOD - %s - %s %s - %s', (icapRes.icapStatus || [null,null,null]).join(' '), req.method, req.uri, (icapRes.httpMethod || [null,null,null]).join(' '));
+      console.log('REQMOD - %s - %s %s - %s', (icapRes.icapStatus || [null,null,null]).join(' '), req.method, req.parsedUri.protocol + '//' + req.parsedUri.host + req.parsedUri.pathname, (icapRes.httpMethod || [null,null,null]).join(' '));
     } catch (e) {
       this.emit('error', e, icapReq, icapRes);
     }
@@ -106,7 +105,6 @@ function ICAPServer(options) {
   this.on('httpResponse', function(icapReq, icapRes, req, res) {
     var ix, cbs, host;
     try {
-      console.log('RESPMOD - %s - %s %s - %s', (icapRes.icapStatus || [null,null,null]).join(' '), req.method, req.uri, (icapRes.httpMethod || [null,null,null]).join(' '));
       ix = 0;
       cbs = this.responseCallbacks;
       host = req.parsedUri.hostname;
@@ -122,7 +120,7 @@ function ICAPServer(options) {
         }
       }
       next();
-      console.log('RESPMOD - %s - %s %s - %s', (icapRes.icapStatus || [null,null,null]).join(' '), req.method, req.uri, (icapRes.httpMethod || [null,null,null]).join(' '));
+      console.log('RESPMOD - %s - %s %s - %s', (icapRes.icapStatus || [null,null,null]).join(' '), req.method, req.parsedUri.protocol + '//' + req.parsedUri.host + req.parsedUri.pathname, (icapRes.httpMethod || [null,null,null]).join(' '));
     } catch (e) {
       this.emit('error', e, icapReq, icapRes);
     }

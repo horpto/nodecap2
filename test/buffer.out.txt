@@ -1,11 +1,11 @@
 ICAP/1.0 200 OK
 Host: icap-server.net
-Encapsulated: req-hdr=0, req-body=173
+Encapsulated: req-hdr=0, req-body=191
 Date: Fri, 24 Jan 2014 00:20:14 GMT
 ISTag: NODECAP-1390522814321
 Server: Nodecap/1.0
 
-POST /origin-resource/form.pl?------- HTTP/1.1
+POST http://example.com/origin-resource/form.pl?------- HTTP/1.1
 Host: www.origin-server.com
 Accept: text/html, text/plain
 Accept-Encoding: compress
