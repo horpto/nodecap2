@@ -33,13 +33,15 @@ The basics:
 	});
 
 
-## API
+## Configuration & Getting Started
 
 Consult your proxy's documentation to understand how to configure the proxy to talk to your ICAP server. It is recommended that you configure requests and responses to be sent to different paths (resource endpoints) on your ICAP server. 
 
 The best documentation is the example and tests, which demonstrate example ICAP requests, ICAP handling, and ICAP responses.
 
-### `server.options(path, cb)`
+## API Configuration
+
+### `server.options(path, next)`
 Allows configuration of a given ICAP endpoint. To set the options for endpoint `/squid/configured/request-path`, you could use:
 
 	# server.js
@@ -53,14 +55,18 @@ Allows configuration of a given ICAP endpoint. To set the options for endpoint `
 	  icapRes.end();
 	});
 
-### `server.request(domainList, cb)`
-Adds middleware to handle a REQMOD (HTTP request modification). The callback signature is `callback(icapRequest, icapResponse, httpRequest, httpResponse, next)`. Calling `next()` is optional and will continue to the next handler. Be sure to have a catch-all handler at the end. `domainList` can be either a DomainList instance - which allows matching request domains against a configured list - or `'*'` to match all requests.
+## API Routing
 
-### `server.response(domainList, cb)`
-Adds middleware to handle a RESPMOD (HTTP response modification). The `domainList` and `cb` options are the same as for `server.request`.
+**nodecap** presents an expressjs-style API where middleware can be declared and matched to requests. Instead of request URI/method combinations, the unit of matching is domains through the `DomainList` class, which implements an efficient matcher for squid3 whitelist/blacklist syntax. Middlware is attached to handle requests to / responses from lists of domains:
+
+### `server.request(domainList, next)`
+Adds middleware to handle a REQMOD (HTTP request modification). The callback signature is `callback(icapRequest, icapResponse, httpRequest, httpResponse, next)`. Calling `next()` is optional and will continue to the next handler. Be sure to have a catch-all handler at the end. `domainList` can be either a DomainList instance - which allows matching request domains against a configured list - or the literal string`"*"` to match all requests.
+
+### `server.response(domainList, next)`
+Adds middleware to handle a RESPMOD (HTTP response modification). The `domainList` and `next` options are the same as for `server.request`.
 
 ### `server.error(err, icapReq, icapRes, next)`
-Adds middleware to handle any errors at the ICAP protocol level.
+Adds middleware to handle errors that occur either at the protocol level or within any options/request/response middleware.
 
 
 ### License
