@@ -30,8 +30,7 @@ var states = {
 function ICAPHandler(socket, emitter, options) {
   this.emitter = emitter;
   this.socket = socket;
-  this.options = options || {};
-  this.debug = !!this.options.debug;
+  this.logger = options.logger;
   this.buffer = new Buffer(0);
   this.bufferIndex = 0;
   this.icapBodyStartIndex = 0;
@@ -49,7 +48,7 @@ ICAPHandler.prototype = {
     socket.setTimeout(0);
 
     socket.on('connect', function() {
-      if (this.debug) console.log(this.id, '[socket:connect]');
+      this.logger.debug('[%s] socket connect', this.id);
       this.emitEvent('connnect');
     }.bind(this));
 
@@ -59,21 +58,21 @@ ICAPHandler.prototype = {
     }.bind(this));
 
     socket.on('end', function() {
-      if (this.debug) console.log(this.id, '[socket:end]');
+      this.logger.debug('[%s] socket end', this.id);
       this.emitEvent('closed');
       socket.end();
     }.bind(this));
 
     socket.on('timeout', function() {
-      if (this.debug) console.log(this.id, '[socket:timeout]');
-    });
+      this.logger.debug('[%s] socket timeout', this.id);
+    }.bind(this));
 
     socket.on('close', function() {
-      if (this.debug) console.log(this.id, '[socket:close]');
-    });
+      this.logger.debug('[%s] socket close', this.id);
+    }.bind(this));
 
     socket.on('error', function(err) {
-      if (this.debug) console.error(this.id, '[socket:error]', err);
+      this.logger.error('[%s] socket error "%s"', this.id, err.message || 'Unknown Error');
 
       // notify the error handler not to process the response further
       if (this.icapResponse) {
@@ -95,7 +94,7 @@ ICAPHandler.prototype = {
   resetState :function(isFirstReset) {
     if (!isFirstReset) {
       this.emitEvent('end');
-      if (this.debug) console.log('resetState');
+      this.logger.debug('[%s] handler resetState', this.id);
     }
     if (this.icapRequest) {
       this.icapRequest.removeAllListeners();
@@ -104,7 +103,7 @@ ICAPHandler.prototype = {
     this.id = id;
     this.state = states.icapmethod;
     this.icapRequest = new ICAPRequest(this.id);
-    this.icapResponse = new ICAPResponse(this.options.responseStream || this.socket, this.id, this.options);
+    this.icapResponse = new ICAPResponse(this.id, this.socket);
     this.httpRequest = new HTTPRequest();
     this.httpResponse = new HTTPResponse();
 
@@ -180,7 +179,7 @@ ICAPHandler.prototype = {
         break;
       case 'null-body':
         this.emitEvent(this.icapRequest.isReqMod() ? 'httpRequestNullBody' : 'httpResponseNullBody');
-        if (this.debug) console.log('null-body');
+        this.logger.debug('[%s] null-body]', this.id);
         this.icapResponse.end();
         this.resetState();
         this.nextState();
@@ -255,7 +254,7 @@ ICAPHandler.prototype = {
     }
     this.icapRequest.setMethod(method);
 
-    if (this.debug) console.log(this.id, '[icapMethod] ', JSON.stringify(method));
+    this.logger.verbose('[%s] icapmethod %s', this.id, JSON.stringify(method));
     this.emitEvent('icapMethod');
     this.nextState(states.icapheader);
   },
@@ -263,11 +262,11 @@ ICAPHandler.prototype = {
   icapheader: function() {
     var headers = this.readAllHeaders();
     if (!headers) {
-      if (this.debug) console.log(this.id, 'No headers WTF?');
+      this.logger.warn('[%s] icapheader - no headers!', this.id);
       return;
     }
     this.icapRequest.setHeaders(headers);
-    if (this.debug) console.log(this.id, '[icapHeaders] ', JSON.stringify(this.icapRequest.headers));
+    this.logger.verbose('[%s] icapheader %s', this.id, JSON.stringify(this.icapRequest.headers));
     this.emitEvent('icapHeaders');
     this.icapBodyStartIndex = this.bufferIndex;
 
@@ -307,7 +306,7 @@ ICAPHandler.prototype = {
       throw new ICAPError('Request headers not found');
     }
     this.httpRequest.setHeaders(headers);
-    if (this.debug) console.log(this.id, '[requestheader] ', JSON.stringify(this.httpRequest));
+    this.logger.verbose('[%s] requestheader %s', this.id, JSON.stringify(this.httpRequest));
     if (this.icapRequest.isReqMod() && !this.parsePreview) {
       this.emitEvent('httpRequest');
     }
@@ -326,7 +325,7 @@ ICAPHandler.prototype = {
       throw new ICAPError('Response headers not found');
     }
     this.httpResponse.setHeaders(headers);
-    if (this.debug) console.log(this.id, '[responseheader] ', JSON.stringify(this.httpResponse));
+    this.logger.verbose('[%s] responseheader %s', this.id, JSON.stringify(this.httpResponse));
     if (this.icapRequest.isRespMod() && !this.parsePreview) {
       this.emitEvent('httpResponse');
     }
@@ -346,7 +345,7 @@ ICAPHandler.prototype = {
         this.icapRequest.preview = this.previewBuffer;
         this.parsePreview = false;
         this.state = states.parsebody;
-        if (this.debug) console.log(this.id, '[preview]\n' + hexy.hexy(this.previewBuffer));
+        this.logger.debug('[%s] parsepreview\n%s', this.id, hexy.hexy(this.previewBuffer));
         if (this.icapRequest.isReqMod()) {
           this.emitEvent('httpRequest');
         } else {
@@ -359,7 +358,7 @@ ICAPHandler.prototype = {
   parsebody: function() {
     var body;
     if (this.previewBuffer) {
-      if (this.debug) console.log(this.id, '[preview -> body]\n' + hexy.hexy(this.previewBuffer));
+      this.logger.debug('[%s] parsebody\n%s', this.id, hexy.hexy(this.previewBuffer));
       this.icapRequest.push(this.previewBuffer);
       this.previewBuffer = null;
     }
@@ -371,11 +370,11 @@ ICAPHandler.prototype = {
     }
     while ((body = this.readChunk()) !== null) {
       if (body.data) {
-        if (this.debug) console.log(this.id, '[body]\n' + hexy.hexy(body.data));
+        this.logger.debug('[%s] parsebody\n%s', this.id, hexy.hexy(body.data));
         this.icapRequest.push(body.data);
       }
       if (body.eof) {
-        if (this.debug) console.log('parsebody:eof');
+        this.logger.debug('[%s] parsebody eof', this.id);
         this.icapRequest.push(null);
         this.icapResponse.end();
         this.resetState();

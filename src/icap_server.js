@@ -1,5 +1,7 @@
 var net = require('net');
+var util = require('util');
 var _ = require('lodash');
+var winston = require('winston');
 var EventEmitter2 = require('eventemitter2').EventEmitter2;
 var ICAPHandler = require('./icap_handler');
 var DomainList = require('./domainlist');
@@ -14,10 +16,20 @@ function ICAPServer(options) {
     wildcard: true,
     delimiter: '/'
   });
-  options = _.defaults(options || {}, {
-    debug: false,
-    responseStream: null
+  this.id = util.format('[server::%d]', process.pid);
+  this.logger = new winston.Logger({
+    transports: [
+      new winston.transports.Console({
+        level: options.logLevel || 'info',
+        timestamp: true
+      })
+    ]
   });
+
+  options = _.defaults(options || {}, {
+    logger: this.logger
+  });
+
   this.server = net.createServer(function(stream) {
     var handler = new ICAPHandler(stream, this, options);
   }.bind(this));
@@ -40,14 +52,14 @@ function ICAPServer(options) {
       }
       next();
     } catch (e) {
-      console.error(e);
       try {
         icapRes.end();
+        this.logger.error('%s ERROR "%s"', this.id, e.message || 'Unknown Error');
       } catch (ee) {
-        console.error(ee);
+        // can't do anything
       }
     } finally {
-      console.log('ERROR - %s - %s', (icapRes.icapStatus || [null,null,null]).join(' '), err.message || 'undefined');
+      this.logger.error('%s ERROR - %s - %s', this.id, (icapRes.icapStatus || [null,null,null]).join(' '), err.message || 'Unknown Error');
     }
   }.bind(this));
 
@@ -70,7 +82,7 @@ function ICAPServer(options) {
         }
       }
       next();
-      console.log('OPTIONS -  %s %s', (icapRes.icapStatus || [null,null,null]).join(' '), (icapRes.httpMethod || [null,null,null]).join(' '));
+      this.logger.info('%s OPTIONS - %s %s', this.id, (icapRes.icapStatus || [null,null,null]).join(' '), (icapRes.httpMethod || [null,null,null]).join(' '));
     } catch (e) {
       this.emit('error', e, icapReq, icapRes);
     }
@@ -95,7 +107,7 @@ function ICAPServer(options) {
         }
       }
       next();
-      console.log('REQMOD - %s - %s %s - %s', (icapRes.icapStatus || [null,null,null]).join(' '), req.method, req.parsedUri.protocol + '//' + req.parsedUri.host + req.parsedUri.pathname, (icapRes.httpMethod || [null,null,null]).join(' '));
+      this.logger.info('%s REQMOD - %s - %s %s - %s', this.id, (icapRes.icapStatus || [null,null,null]).join(' '), req.method, req.parsedUri.protocol + '//' + req.parsedUri.host + req.parsedUri.pathname, (icapRes.httpMethod || [null,null,null]).join(' '));
     } catch (e) {
       this.emit('error', e, icapReq, icapRes);
     }
@@ -120,7 +132,7 @@ function ICAPServer(options) {
         }
       }
       next();
-      console.log('RESPMOD - %s - %s %s - %s', (icapRes.icapStatus || [null,null,null]).join(' '), req.method, req.parsedUri.protocol + '//' + req.parsedUri.host + req.parsedUri.pathname, (icapRes.httpMethod || [null,null,null]).join(' '));
+      this.logger.info('%s RESPMOD - %s - %s %s - %s', this.id, (icapRes.icapStatus || [null,null,null]).join(' '), req.method, req.parsedUri.protocol + '//' + req.parsedUri.host + req.parsedUri.pathname, (icapRes.httpMethod || [null,null,null]).join(' '));
     } catch (e) {
       this.emit('error', e, icapReq, icapRes);
     }

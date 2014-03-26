@@ -6,9 +6,8 @@ var codes = require('./codes');
 var currentISTag = "NODECAP-" + (new Date()).getTime();
 var crlf = '\r\n';
 
-var ICAPResponse = module.exports = function(stream, id, options) {
+var ICAPResponse = module.exports = function(id, stream) {
   Response.call(this);
-  this.debug = options && options.debug;
   this.stream = stream;
   this.id = id;
   this.protocol = 'ICAP';
@@ -103,18 +102,13 @@ _.extend(ICAPResponse.prototype, {
     }
 
     // icap status/headers
-    if (this.debug) process.stdout.write(this.icapStatus.join(' '));
     stream.write(this.icapStatus.join(' '));
-    if (this.debug) process.stdout.write(crlf);
     stream.write(crlf);
     _.each(this.icapHeaders, function(value, key) {
-      if (this.debug) process.stdout.write(key + ': ' + value + crlf);
       stream.write(key + ': ' + value + crlf);
     }.bind(this));
-    if (this.debug) process.stdout.write(crlf);
     stream.write(crlf);
 
-    if (this.debug) process.stdout.write(headerBlock);
     stream.write(headerBlock);
   },
   allowUnchanged: function(icapResponse) {
@@ -127,11 +121,8 @@ _.extend(ICAPResponse.prototype, {
   continuePreview: function() {
     if (!this.ieof) {
       var code = this._getCode(100);
-      if (this.debug) process.stdout.write(code.join(' '));
       this.stream.write(code.join(' '));
-      if (this.debug) process.stdout.write(crlf);
       this.stream.write(crlf);
-      if (this.debug) process.stdout.write(crlf);
       this.stream.write(crlf);
     }
   },
@@ -161,11 +152,8 @@ _.extend(ICAPResponse.prototype, {
       // ensure that data is in buffer form for accurate length measurements
       // and to avoid encoding issues when writing
       tmp = data instanceof Buffer ? data : new Buffer(data);
-      if (this.debug) process.stdout.write(hexy.hexy(tmp.length.toString(16) + '\r\n'));
       this.stream.write(tmp.length.toString(16) + '\r\n');
-      if (this.debug) process.stdout.write(hexy.hexy(tmp));
       this.stream.write(tmp);
-      if (this.debug) process.stdout.write(hexy.hexy('\r\n'));
       this.stream.write('\r\n');
     } else {
       // alert the filter that stream is over
@@ -176,7 +164,6 @@ _.extend(ICAPResponse.prototype, {
         this.buffer = null;
         this._write(data);
       }
-      if (this.debug) process.stdout.write(hexy.hexy('0\r\n\r\n'));
       this.stream.write('0\r\n\r\n');
     }
   },
