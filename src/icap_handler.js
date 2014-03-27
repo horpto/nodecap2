@@ -99,7 +99,7 @@ ICAPHandler.prototype = {
     if (this.icapRequest) {
       this.icapRequest.removeAllListeners();
     }
-    var id = _.uniqueId();
+    var id = process.pid + '::' + _.uniqueId();
     this.id = id;
     this.state = states.icapmethod;
     this.icapRequest = new ICAPRequest(this.id);

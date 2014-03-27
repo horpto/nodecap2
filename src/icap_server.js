@@ -16,8 +16,8 @@ function ICAPServer(options) {
     wildcard: true,
     delimiter: '/'
   });
-  this.id = util.format('[server::%d]', process.pid);
-  this.logger = new winston.Logger({
+  this.id = util.format('[%d::server]', process.pid);
+  this.logger = options.logger || new winston.Logger({
     transports: [
       new winston.transports.Console({
         level: options.logLevel || 'info',

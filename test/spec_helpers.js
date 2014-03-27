@@ -21,7 +21,7 @@ var testIO = function(testName, sampleName, configureFn) {
   test(testName, function(t) {
     var buffer = '';
     var server = new ICAPServer({
-      debug: process.argv.indexOf('--debug') >= 0
+      logLevel: process.argv.indexOf('--debug') >= 0 ? 'debug' : 'info'
     });
 
     var doneFn = function(err, result) {
@@ -57,9 +57,6 @@ var testIO = function(testName, sampleName, configureFn) {
         }
       });
 
-      if (configureFn) {
-        
-      }
       setTimeout(function() {
         client.end();
         // console.log(output);
