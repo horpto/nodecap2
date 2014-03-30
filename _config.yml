@@ -1,0 +1,25 @@
+# Dependencies
+markdown:         redcarpet
+pygments:         true
+
+# Permalinks
+permalink:        pretty
+
+# Setup
+title:            Nodecap
+tagline:          'ICAP server framework for node.js - create custom HTTP proxy filters for Squid, etc.'
+description:      'An ICAP server framework for node.js - create custom HTTP proxy filters for Squid, etc.'
+url:              http://josephsavona.github.io/nodecap
+baseurl:	        /nodecap
+
+author:
+  name:           'Joseph Savona'
+  url:            http://josephsavona.com
+
+paginate:         1
+
+# Custom vars
+version:          0.1.3
+
+github:
+  repo:           https://github.com/josephsavona/nodecap
