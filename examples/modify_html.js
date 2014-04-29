@@ -83,7 +83,7 @@ server.response('*', function(icapReq, icapRes, req, res, next) {
     return next();
   }
 
-  // filter html
+  // configure a filter that will run only after the full response data is received
   icapRes.setFilter(true, function(buffer) {
     var str = buffer.toString('utf8');
 
@@ -96,9 +96,11 @@ server.response('*', function(icapReq, icapRes, req, res, next) {
     // TODO: parse str -> html, modify html, html -> str here
     return str;
   });
+
+  // the only immediate action is to request the full response body
   icapReq.pipe(icapRes);
   icapReq.continuePreview(); 
-  // explicitly do not go to 
+  // explicitly do not go to next
 });
 
 //  allow all responses
