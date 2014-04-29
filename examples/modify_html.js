@@ -84,11 +84,21 @@ server.response('*', function(icapReq, icapRes, req, res, next) {
   }
 
   // filter html
-  icapRes.setFilter(filterHtml);
-  // at this point we only have preview data, must request remainder
-  // of the request body
+  icapRes.setFilter(true, function(buffer) {
+    var str = buffer.toString('utf8');
+
+    icapRes.setIcapStatusCode(200);
+    icapRes.setIcapHeaders(icapReq.headers);
+    icapRes.setHttpStatus(res.code);
+    icapRes.setHttpHeaders(res.headers);
+    icapRes.writeHeaders(icapReq.hasBody());
+
+    // TODO: parse str -> html, modify html, html -> str here
+    return str;
+  });
+  icapReq.pipe(icapRes);
   icapReq.continuePreview(); 
-  next();
+  // explicitly do not go to 
 });
 
 //  allow all responses
