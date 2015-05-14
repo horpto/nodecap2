@@ -39,7 +39,7 @@ function ICAPServer(options) {
 
   this.errorCallbacks = [];
   this.on('error', function(err, icapReq, icapRes) {
-    var ix, cbs;
+    var ix, cbs, self = this;
     try {
       ix = 0;
       cbs = this.errorCallbacks;
@@ -48,7 +48,7 @@ function ICAPServer(options) {
         if (!fn || icapRes.done) {
           return;
         }
-        fn.call(this, err, icapReq, icapRes, next);
+        fn.call(self, err, icapReq, icapRes, next);
       }
       next();
     } catch (e) {
@@ -65,7 +65,7 @@ function ICAPServer(options) {
 
   this.optionsCallbacks = [];
   this.on('icapOptions', function(icapReq, icapRes) {
-    var ix, cbs, pathname;
+    var ix, cbs, pathname, self = this;
     try {
       ix = 0;
       cbs = this.optionsCallbacks;
@@ -76,7 +76,7 @@ function ICAPServer(options) {
           return;
         }
         if (!fn[0] || fn[0].test(pathname)) {
-          fn[1].call(this, icapReq, icapRes, next);
+          fn[1].call(self, icapReq, icapRes, next);
         } else {
           next();
         }
@@ -90,7 +90,7 @@ function ICAPServer(options) {
 
   this.requestCallbacks = [];
   this.on('httpRequest', function(icapReq, icapRes, req, res) {
-    var ix, cbs, host;
+    var ix, cbs, host, self = this;
     try {
       ix = 0;
       cbs = this.requestCallbacks;
@@ -115,7 +115,7 @@ function ICAPServer(options) {
 
   this.responseCallbacks = [];
   this.on('httpResponse', function(icapReq, icapRes, req, res) {
-    var ix, cbs, host;
+    var ix, cbs, host, self = this;
     try {
       ix = 0;
       cbs = this.responseCallbacks;
@@ -126,7 +126,7 @@ function ICAPServer(options) {
           return;
         }
         if (!fn[0] || fn[0].contains(host)) {
-          fn[1].call(this, icapReq, icapRes, req, res, next);
+          fn[1].call(self, icapReq, icapRes, req, res, next);
         } else {
           next();
         }
