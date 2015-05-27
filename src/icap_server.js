@@ -171,26 +171,26 @@ ICAPServer.prototype = _.extend({}, EventEmitter2.prototype, {
   },
 
   request: function(domain, cb) {
-    var domainlist;
+    var domainList;
     if (!!domain && domain instanceof DomainList) {
       domainList = domain;
     } else if (!domain || domain === '*') {
       domainList = null;
     } else {
-      domainlist = new DomainList();
+      domainList = new DomainList();
       domainList.add(domain);
     }
     this.requestCallbacks.push([domainList, cb]);
   },
 
   response: function(domain, cb) {
-    var domainlist;
+    var domainList;
     if (!!domain && domain instanceof DomainList) {
       domainList = domain;
     } else if (!domain || domain === '*') {
       domainList = null;
     } else {
-      domainlist = new DomainList();
+      domainList = new DomainList();
       domainList.add(domain);
     }
     this.responseCallbacks.push([domainList, cb]);
