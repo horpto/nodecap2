@@ -53,7 +53,11 @@ ICAPHandler.prototype = {
     }.bind(this));
 
     socket.on('data', function(data) {
-      this.buffer = Buffer.concat([this.buffer, data], this.buffer.length + data.length);
+      if (this.buffer.length == 0) {
+        this.buffer = data;
+      } else {
+        this.buffer = Buffer.concat([this.buffer, data], this.buffer.length + data.length);
+      }
       this.nextState();
     }.bind(this));
 
@@ -381,6 +385,11 @@ ICAPHandler.prototype = {
         this.nextState();
         break;
       }
+    }
+
+    if (this.bufferIndex != 0) {
+      this.buffer = this.buffer.slice(this.bufferIndex);
+      this.bufferIndex = 0;
     }
   }
 };
