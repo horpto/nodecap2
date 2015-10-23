@@ -2,7 +2,6 @@ var net = require('net');
 var url = require('url');
 var util = require('util');
 var _ = require('lodash');
-var hexy = require('hexy');
 
 var ICAPError = require('./icap_error');
 var ICAPRequest = require('./icap_request');
@@ -349,7 +348,6 @@ ICAPHandler.prototype = {
         this.icapRequest.preview = this.previewBuffer;
         this.parsePreview = false;
         this.state = states.parsebody;
-        this.logger.debug('[%s] parsepreview\n%s', this.id, hexy.hexy(this.previewBuffer));
         if (this.icapRequest.isReqMod()) {
           this.emitEvent('httpRequest');
         } else {
@@ -362,7 +360,7 @@ ICAPHandler.prototype = {
   parsebody: function() {
     var body;
     if (this.previewBuffer) {
-      this.logger.debug('[%s] parsebody\n%s', this.id, hexy.hexy(this.previewBuffer));
+      this.logger.debug('[%s] parsebody preview chunk length %s', this.id, this.previewBuffer.length);
       this.icapRequest.push(this.previewBuffer);
       this.previewBuffer = null;
     }
@@ -374,7 +372,7 @@ ICAPHandler.prototype = {
     }
     while ((body = this.readChunk()) !== null) {
       if (body.data) {
-        this.logger.debug('[%s] parsebody\n%s', this.id, hexy.hexy(body.data));
+        this.logger.debug('[%s] parsebody chunk length %s', this.id, body.data.length);
         this.icapRequest.push(body.data);
       }
       if (body.eof) {

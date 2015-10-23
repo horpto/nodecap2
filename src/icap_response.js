@@ -1,6 +1,5 @@
 var util = require('util');
 var _ = require('lodash');
-var hexy = require('hexy');
 var Response = require('./response');
 var codes = require('./codes');
 var currentISTag = "NODECAP-" + (new Date()).getTime();
@@ -144,7 +143,7 @@ _.extend(ICAPResponse.prototype, {
         return;
       }
       // filter output and abort if no reponse
-      // note: this allows filter authors to buffer data internally 
+      // note: this allows filter authors to buffer data internally
       // and call response.send(data) once filter receives a `null`
       if (this.filter) {
         data = this.filter(data);

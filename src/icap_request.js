@@ -2,7 +2,7 @@ var util = require('util');
 var _ = require('lodash');
 var Request = require('./request');
 var mmm = require('mmmagic');
-var hexy = require('hexy');
+
 var magic = new mmm.Magic(mmm.MAGIC_MIME_TYPE);
 
 var ICAPRequest = module.exports = function(id) {
