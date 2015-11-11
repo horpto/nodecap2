@@ -1,14 +1,17 @@
-nodecap
+nodecap2
 =======
+
+It is fork of [nodecap](https://www.npmjs.com/package/nodecap) with some fixes and performance improvements.
+I didn't change gh pages, docs and tests yet.
 
 ICAP server framework for node.js - create custom HTTP proxy filters for Squid, etc. **nodecap** implements the [ICAP protocol](http://www.icap-forum.org/documents/specification/rfc3507.txt).
 
 ## Use Case
-[Squid](http://www.squid-cache.org/) and other HTTP proxy servers typically provide only basic levels of filtering. **nodecap** implements the ICAP protocol, allowing for dynamic, per-request filtering and modification of requests and responses. 
+[Squid](http://www.squid-cache.org/) and other HTTP proxy servers typically provide only basic levels of filtering. **nodecap** implements the ICAP protocol, allowing for dynamic, per-request filtering and modification of requests and responses.
 
 Examples:
 
-* Whitelist some domains (eg http://example.com) and then dynamically graylist domains that appear frequently in the response HTML (eg example.com's asset CDN, http://cdn.example.net). 
+* Whitelist some domains (eg http://example.com) and then dynamically graylist domains that appear frequently in the response HTML (eg example.com's asset CDN, http://cdn.example.net).
 * Rewrite response content
 * Verify MIME types of requests/responses
 * Perform request-time validation against other services (anything you can do in node)
@@ -35,7 +38,7 @@ The basics:
 
 ## Configuration & Getting Started
 
-Consult your proxy's documentation to understand how to configure the proxy to talk to your ICAP server. It is recommended that you configure requests and responses to be sent to different paths (resource endpoints) on your ICAP server. 
+Consult your proxy's documentation to understand how to configure the proxy to talk to your ICAP server. It is recommended that you configure requests and responses to be sent to different paths (resource endpoints) on your ICAP server.
 
 The best documentation is the example and tests, which demonstrate example ICAP requests, ICAP handling, and ICAP responses.
 
