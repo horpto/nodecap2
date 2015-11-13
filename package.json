@@ -1,6 +1,6 @@
 {
   "name": "nodecap2",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "ICAP server framework for node.js - create custom HTTP proxy filters for Squid, etc.",
   "main": "index.js",
   "directories": {
@@ -11,9 +11,11 @@
     "eventemitter2": "~0.4.13",
     "datauri": "~0.4.0",
     "lodash": "~2.4.1",
-    "mmmagic": "~0.3.6",
     "q": "~1.0.0",
     "winston": "^0.7.3"
+  },
+  "optionalDependencies":{
+    "mmmagic": "~0.3.6"
   },
   "devDependencies": {
     "tap": "~0.4.8"

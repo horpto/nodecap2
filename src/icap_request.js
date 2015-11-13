@@ -1,9 +1,14 @@
 var util = require('util');
 var _ = require('lodash');
 var Request = require('./request');
-var mmm = require('mmmagic');
+var magic = null;
 
-var magic = new mmm.Magic(mmm.MAGIC_MIME_TYPE);
+try {
+  var mmm = require('mmmagic');
+  magic = new mmm.Magic(mmm.MAGIC_MIME_TYPE);
+} catch (err) {
+  console.warn('Can not import mmagic');
+}
 
 var ICAPRequest = module.exports = function(id) {
   Request.call(this);
@@ -49,6 +54,9 @@ _.extend(ICAPRequest.prototype, {
       cb(null, null);
       return;
     }
-    magic.detect(this.preview, cb);
+    if (magic != null) {
+      return magic.detect(this.preview, cb);
+    }
+    return cb(new Error("'mmagic' not loaded"), null);
   }
 });
