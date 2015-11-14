@@ -1,3 +1,5 @@
+"use strict";
+
 module.exports = {
   100: ['Continue', 'Request received, please continue'],
   101: ['Switching Protocols',

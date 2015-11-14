@@ -1,3 +1,5 @@
+"use strict";
+
 var net = require('net');
 var util = require('util');
 var _ = require('lodash');

@@ -1,3 +1,5 @@
+"use strict";
+
 var util = require('util');
 var _ = require('lodash');
 var Response = require('./response');

@@ -1,3 +1,5 @@
+"use strict";
+
 var url = require('url');
 
 //  read from start/0 up to the next newline. returns null if no newline found, else
