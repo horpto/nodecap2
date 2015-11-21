@@ -32,6 +32,7 @@ function ICAPHandler(socket, emitter, options) {
   this.emitter = emitter;
   this.socket = socket;
   this.logger = options.logger;
+  this.options = options;
   this.buffer = new Buffer(0);
   this.bufferIndex = 0;
   this.icapBodyStartIndex = 0;
@@ -108,7 +109,7 @@ ICAPHandler.prototype = {
     this.id = id;
     this.state = states.icapmethod;
     this.icapRequest = new ICAPRequest(this.id);
-    this.icapResponse = new ICAPResponse(this.id, this.socket);
+    this.icapResponse = new ICAPResponse(this.id, this.socket, this.options);
     this.httpRequest = new HTTPRequest();
     this.httpResponse = new HTTPResponse();
 

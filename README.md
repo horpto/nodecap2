@@ -28,7 +28,10 @@ The basics:
 
 	//  run the server
 	var server = new ICAPServer({
-	  debug: false
+	  debug: false,
+		// 4096 by default - size of chunks that will send to Squid
+		// 0 - not slice big chunks by chunkSize
+		chunkSize: 0
 	});
 	console.log('Starting ICAP server...');
 	server.listen(function(port) {

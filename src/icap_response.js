@@ -7,7 +7,7 @@ var codes = require('./codes');
 var currentISTag = "NODECAP-" + (new Date()).getTime();
 var crlf = '\r\n';
 
-var ICAPResponse = module.exports = function(id, stream) {
+var ICAPResponse = module.exports = function(id, stream, options) {
   Response.call(this);
   this.stream = stream;
   this.id = id;
@@ -16,6 +16,7 @@ var ICAPResponse = module.exports = function(id, stream) {
   this.filter = null;
   this.sendData = null;
   this.allowUnchangedAllowed = true;
+  this.chunkSize = 'chunkSize' in options ? options.chunkSize : 4096;
 };
 util.inherits(ICAPResponse, Response);
 
@@ -132,13 +133,14 @@ _.extend(ICAPResponse.prototype, {
         this.buffer = Buffer.concat([this.buffer, data], this.buffer.length + data.length);
         return;
       }
-      if (data.length > 4096) {
-        tmp = data.slice(0, 4096);
-        data = data.slice(4096);
+      if (this.chunkSize && data.length > this.chunkSize) {
+        var size = this.chunkSize; // 4096 bytes by default
+        tmp = data.slice(0, size);
+        data = data.slice(size);
         while (tmp.length) {
           this._write(tmp);
-          tmp = data.slice(0, 4096);
-          data = data.slice(4096);
+          tmp = data.slice(0, size);
+          data = data.slice(size);
         }
         return;
       }

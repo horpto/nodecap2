@@ -29,7 +29,8 @@ function ICAPServer(options) {
   });
 
   options = _.defaults(options || {}, {
-    logger: this.logger
+    logger: this.logger,
+    chunkSize: 4096
   });
 
   this.server = net.createServer(function(stream) {
