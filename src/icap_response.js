@@ -17,6 +17,11 @@ var ICAPResponse = module.exports = function(id, stream, options) {
   this.sendData = null;
   this.allowUnchangedAllowed = true;
   this.chunkSize = 'chunkSize' in options ? options.chunkSize : 4096;
+  this.icapStatus = null;
+  this.icapHeaders = null;
+  this.httpMethod = null;
+  this.httpHeaders = null;
+  this.buffer = null;
 };
 util.inherits(ICAPResponse, Response);
 
