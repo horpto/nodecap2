@@ -31,7 +31,7 @@ _.extend(ICAPRequest.prototype, {
     this.stream = stream;
   },
   hasPreview: function() {
-    return this.headers && 'Preview' in this.headers;
+    return this.headers && !!parseInt(this.headers['Preview']);
   },
   hasBody: function() {
     if (!this.encapsulated || !this.encapsulated.length) {

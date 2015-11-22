@@ -97,7 +97,7 @@ ICAPHandler.prototype = {
     this.emitter.emit('error', err, this.icapRequest, this.icapResponse, this.httpRequest, this.httpResponse);
   },
 
-  resetState :function(isFirstReset) {
+  resetState: function(isFirstReset) {
     if (!isFirstReset) {
       this.emitEvent('end');
       this.logger.debug('[%s] handler resetState', this.id);
@@ -124,7 +124,7 @@ ICAPHandler.prototype = {
     this.parsePreview = false;
   },
 
-  nextState : function(state, offset) {
+  nextState: function(state, offset) {
     if (!this.nextIfNotDone()) {
       return;
     }
@@ -352,6 +352,9 @@ ICAPHandler.prototype = {
       }
       if (body.eof) {
         this.icapRequest.preview = this.previewBuffer;
+        if (this.previewBuffer.length === 0) {
+          this.previewBuffer = null;
+        }
         this.parsePreview = false;
         this.state = states.parsebody;
         if (this.icapRequest.isReqMod()) {
