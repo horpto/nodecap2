@@ -51,7 +51,7 @@ ICAPHandler.prototype = {
 
     socket.on('connect', function() {
       this.logger.debug('[%s] socket connect', this.id);
-      this.emitEvent('connnect');
+      this.emitEvent('connect');
     }.bind(this));
 
     socket.on('data', function(data) {
