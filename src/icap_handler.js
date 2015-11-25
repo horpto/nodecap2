@@ -406,6 +406,7 @@ ICAPHandler.prototype = {
     if (this.bufferIndex != 0) {
       this.buffer = this.buffer.slice(this.bufferIndex);
       this.bufferIndex = 0;
+      this.waitOffset = 0;
     }
   }
 };
