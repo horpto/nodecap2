@@ -68,7 +68,6 @@ _.extend(ICAPResponse.prototype, {
     this.filter = filterFn;
   },
   writeHeaders: function(hasBody) {
-    var stream = this.stream;
     var headerBlock = '';
     if (!this.icapStatus) {
       // TODO: user should always call setIcapStatusCode(), could throw error
@@ -109,14 +108,12 @@ _.extend(ICAPResponse.prototype, {
     }
 
     // icap status/headers
-    stream.write(this.icapStatus.join(' '));
-    stream.write(crlf);
+    var icapBlock = this.icapStatus.join(' ') + crlf;
     _.each(this.icapHeaders, function(value, key) {
-      stream.write(key + ': ' + value + crlf);
-    }.bind(this));
-    stream.write(crlf);
+      icapBlock += key + ': ' + value + crlf;
+    });
 
-    stream.write(headerBlock);
+    this.stream.write(icapBlock + crlf + headerBlock);
   },
   allowUnchanged: function(icapResponse) {
     if (this.allowUnchangedAllowed) {
@@ -127,9 +124,7 @@ _.extend(ICAPResponse.prototype, {
   },
   continuePreview: function() {
     var code = this._getCode(100);
-    this.stream.write(code.join(' '));
-    this.stream.write(crlf);
-    this.stream.write(crlf);
+    this.stream.write(code.join(' ') + crlf + crlf);
   },
   _write: function(data) {
     var tmp;
@@ -158,9 +153,9 @@ _.extend(ICAPResponse.prototype, {
       // ensure that data is in buffer form for accurate length measurements
       // and to avoid encoding issues when writing
       tmp = data instanceof Buffer ? data : new Buffer(data);
-      this.stream.write(tmp.length.toString(16) + '\r\n');
+      this.stream.write(tmp.length.toString(16) + crlf);
       this.stream.write(tmp);
-      this.stream.write('\r\n');
+      this.stream.write(crlf);
     } else {
       // alert the filter that stream is over
       // can return data to write it before the stream is ended
