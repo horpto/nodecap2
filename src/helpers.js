@@ -96,7 +96,7 @@ var readStatus = function(buf, start, len) {
   var message = tokens.join(' ');
   return {
     version: version,
-    code: code,
+    code: parseInt(code) || 503,
     message: message,
     index: line.index
   };

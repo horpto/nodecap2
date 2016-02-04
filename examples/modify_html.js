@@ -73,7 +73,7 @@ var filterHtml = function(data) {
 //  filter html responses
 server.response('*', function(icapReq, icapRes, req, res, next) {
   // pass through if http error
-  if (res.code !== '200') {
+  if (res.code !== 200) {
     return next();
   }
 
