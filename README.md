@@ -1,6 +1,8 @@
 nodecap2
 =======
 
+[![Join the chat at https://gitter.im/horpto/nodecap2](https://badges.gitter.im/horpto/nodecap2.svg)](https://gitter.im/horpto/nodecap2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 It is fork of [nodecap](https://www.npmjs.com/package/nodecap) with some fixes and performance improvements.
 I didn't change gh pages, docs and tests yet.
 
