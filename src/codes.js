@@ -52,6 +52,7 @@ module.exports = {
       'Cannot satisfy request range.'],
   417: ['Expectation Failed',
       'Expect condition could not be satisfied.'],
+  451: ['Unavailable For Legal Reasons', 'Resource access is denied due to legal demands.'],
 
   500: ['Internal Server Error', 'Server got itself in trouble'],
   501: ['Not Implemented',
