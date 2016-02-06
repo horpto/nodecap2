@@ -70,7 +70,7 @@ var acceptRequest = function(icapReq, icapRes, req, res) {
     icapRes.setHttpMethod(req);
     icapRes.setHttpHeaders(req.headers);
   } else {
-    icapRes.setHttpMethod(res);
+    icapRes.setHttpStatus(res.code);
     icapRes.setHttpHeaders(res.headers);
   }
   var hasBody = icapReq.hasBody();
@@ -100,6 +100,7 @@ var rejectRequest = function(icapReq, icapRes, req, res) {
   } else {
     icapRes.writeHeaders(false);
   }
+  icapRes.end();
 };
 
 

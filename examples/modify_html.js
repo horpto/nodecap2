@@ -48,7 +48,7 @@ var acceptRequest = function(icapReq, icapRes, req, res) {
     icapRes.setHttpMethod(req);
     icapRes.setHttpHeaders(req.headers);
   } else {
-    icapRes.setHttpMethod(res);
+    icapRes.setHttpStatus(res.code); // or icapRes.setHttpStatus(res);
     icapRes.setHttpHeaders(res.headers);
   }
   var hasBody = icapReq.hasBody();
