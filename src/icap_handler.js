@@ -46,47 +46,48 @@ ICAPHandler.prototype = {
   constructor: ICAPHandler,
 
   initialize: function() {
+    var self = this;
     var socket = this.socket;
     socket.setTimeout(0);
 
     socket.on('connect', function() {
-      this.logger.debug('[%s] socket connect', this.id);
-      this.emitEvent('connect');
-    }.bind(this));
+      self.logger.debug('[%s] socket connect', self.id);
+      self.emitEvent('connect');
+    });
 
     socket.on('data', function(data) {
-      if (this.buffer.length == 0) {
-        this.buffer = data;
+      if (self.buffer.length == 0) {
+        self.buffer = data;
       } else {
-        this.buffer = Buffer.concat([this.buffer, data], this.buffer.length + data.length);
+        self.buffer = Buffer.concat([self.buffer, data], self.buffer.length + data.length);
       }
-      this.nextState();
-    }.bind(this));
+      self.nextState();
+    });
 
     socket.on('end', function() {
-      this.logger.debug('[%s] socket end', this.id);
-      this.emitEvent('closed');
+      self.logger.debug('[%s] socket end', self.id);
+      self.emitEvent('closed');
       socket.destroy();
-    }.bind(this));
+    });
 
     socket.on('timeout', function() {
-      this.logger.debug('[%s] socket timeout', this.id);
-    }.bind(this));
+      self.logger.debug('[%s] socket timeout', self.id);
+    });
 
     socket.on('close', function() {
-      this.logger.debug('[%s] socket close', this.id);
-    }.bind(this));
+      self.logger.debug('[%s] socket close', self.id);
+    });
 
     socket.on('error', function(err) {
-      this.logger.error('[%s] socket error "%s"', this.id, err.message || 'Unknown Error');
+      self.logger.error('[%s] socket error "%s"', self.id, err.message || 'Unknown Error');
 
       // notify the error handler not to process the response further
-      if (this.icapResponse) {
-        this.icapResponse.done = true;
+      if (self.icapResponse) {
+        self.icapResponse.done = true;
       }
-      this.emitError(err);
+      self.emitError(err);
       socket.destroy();
-    }.bind(this));
+    });
   },
 
   emitEvent: function(eventName) {
