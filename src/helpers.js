@@ -1,6 +1,6 @@
 "use strict";
 
-var url = require('url');
+var URL = require('url-parse-as-address');
 
 //  read from start/0 up to the next newline. returns null if no newline found, else
 //  {
@@ -71,7 +71,7 @@ var readMethod = function(buf, start, len) {
   }
   var method = tokens.shift();
   var uri = tokens.shift();
-  var parsedUri = url.parse(uri, true);
+  var parsedUri = URL(uri);
   var version = tokens.join(' ');
   return {
     method: method,

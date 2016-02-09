@@ -8,10 +8,11 @@
     "test": "test"
   },
   "dependencies": {
-    "eventemitter2": "~0.4.13",
     "datauri": "~0.4.0",
+    "eventemitter2": "~0.4.13",
     "lodash": "~2.4.1",
     "q": "~1.0.0",
+    "url-parse-as-address": "^1.0.0",
     "winston": "^0.7.3"
   },
   "optionalDependencies": {
