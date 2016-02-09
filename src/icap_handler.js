@@ -66,7 +66,7 @@ ICAPHandler.prototype = {
     socket.on('end', function() {
       this.logger.debug('[%s] socket end', this.id);
       this.emitEvent('closed');
-      socket.end();
+      socket.destroy();
     }.bind(this));
 
     socket.on('timeout', function() {
@@ -85,7 +85,7 @@ ICAPHandler.prototype = {
         this.icapResponse.done = true;
       }
       this.emitError(err);
-      socket.end();
+      socket.destroy();
     }.bind(this));
   },
 
@@ -139,7 +139,7 @@ ICAPHandler.prototype = {
         this[this.state]();
       } catch (err) {
         this.emitError(err);
-        this.socket.end();
+        this.socket.destroy();
       }
     }
   },
