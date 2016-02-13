@@ -13,12 +13,12 @@ var Response = module.exports = function(stream) {
 };
 util.inherits(Response, EventEmitter2);
 
-_.extend(Response.prototype, {
+_.assign(Response.prototype, {
   setHeaders: function(headers) {
     if (!this.headers) {
       this.headers = headers;
       return;
     }
-    _.extend(this.headers, headers);
+    _.assign(this.headers, headers);
   }
 });

@@ -27,7 +27,7 @@ util.inherits(ICAPResponse, Response);
 
 ICAPResponse.continueEvent = 'continueEvent';
 
-_.extend(ICAPResponse.prototype, {
+_.assign(ICAPResponse.prototype, {
   _getCode: function(code, options) {
     code = code || 500;
     options = options || {};
@@ -37,7 +37,7 @@ _.extend(ICAPResponse.prototype, {
     this.icapStatus = this._getCode(code, options);
   },
   setIcapHeaders: function(headers) {
-    this.icapHeaders = _.extend(this.icapHeaders || {}, headers);
+    this.icapHeaders = _.assign(this.icapHeaders || {}, headers);
   },
   setHttpMethod: function(options) {
     this.httpMethodType = 'request';
@@ -54,7 +54,7 @@ _.extend(ICAPResponse.prototype, {
     this.httpMethod = this._getCode(code, options);
   },
   setHttpHeaders: function(headers) {
-    this.httpHeaders = _.extend(this.httpHeaders || {}, headers);
+    this.httpHeaders = _.assign(this.httpHeaders || {}, headers);
   },
   hasFilter: function() {
     return typeof this.filter === 'function';

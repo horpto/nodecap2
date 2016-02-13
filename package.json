@@ -8,11 +8,9 @@
     "test": "test"
   },
   "dependencies": {
-    "eventemitter2": "~0.4.13",
-    "datauri": "~0.4.0",
-    "lodash": "~2.4.1",
-    "q": "~1.0.0",
-    "winston": "^0.7.3"
+    "eventemitter2": "^0.4.14",
+    "lodash": "^4.3.0",
+    "winston": "^2.1.1"
   },
   "optionalDependencies": {
     "mmmagic": "~0.3.6"

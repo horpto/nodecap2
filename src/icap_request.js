@@ -21,7 +21,7 @@ var ICAPRequest = module.exports = function(id) {
 };
 util.inherits(ICAPRequest, Request);
 
-_.extend(ICAPRequest.prototype, {
+_.assign(ICAPRequest.prototype, {
   push: function(data) {
     if (this.stream) {
       this.stream._write(data);

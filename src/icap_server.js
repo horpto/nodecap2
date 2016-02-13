@@ -146,7 +146,7 @@ function ICAPServer(options) {
   }.bind(this));
 }
 
-ICAPServer.prototype = _.extend({}, EventEmitter2.prototype, {
+ICAPServer.prototype = _.assign({}, EventEmitter2.prototype, {
   constructor: ICAPServer,
 
   listen: function(port, fn) {

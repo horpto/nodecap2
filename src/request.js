@@ -14,16 +14,16 @@ var Request = module.exports = function() {
 };
 util.inherits(Request, EventEmitter2);
 
-_.extend(Request.prototype, {
+_.assign(Request.prototype, {
   setHeaders: function(headers) {
     if (!this.headers) {
       this.headers = headers;
       return;
     }
-    _.extend(this.headers, headers);
+    _.assign(this.headers, headers);
   },
   setMethod: function(method) {
-    _.extend(this, method);
+    _.assign(this, method);
     if (!this.parsedUri) {
       this.parsedUri = {
         pathname: ''

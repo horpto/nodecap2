@@ -245,7 +245,7 @@ ICAPHandler.prototype = {
     var header = null;
     var headers = {};
     while ((header = this.read(helpers.header)) !== null) {
-      _.extend(headers, header.header);
+      _.assign(headers, header.header);
 
       if (this.read(helpers.newline).newline) {
         return headers;
@@ -309,7 +309,7 @@ ICAPHandler.prototype = {
     if (!method) {
       throw new ICAPError('Request method not found');
     }
-    _.extend(this.httpRequest, method);
+    _.assign(this.httpRequest, method);
 
     var headers = this.readAllHeaders();
     if (!headers) {
@@ -328,7 +328,7 @@ ICAPHandler.prototype = {
     if (!status) {
       throw new ICAPError('Response method not found');
     }
-    _.extend(this.httpResponse, status);
+    _.assign(this.httpResponse, status);
 
     var headers = this.readAllHeaders();
     if (!headers) {
