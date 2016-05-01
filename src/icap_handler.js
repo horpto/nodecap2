@@ -1,8 +1,6 @@
 "use strict";
 
 var net = require('net');
-var url = require('url');
-var util = require('util');
 var _ = require('lodash');
 
 var ICAPError = require('./icap_error');
@@ -309,7 +307,7 @@ ICAPHandler.prototype = {
     if (!method) {
       throw new ICAPError('Request method not found');
     }
-    _.assign(this.httpRequest, method);
+    this.httpRequest.setMethod(method);
 
     var headers = this.readAllHeaders();
     if (!headers) {
