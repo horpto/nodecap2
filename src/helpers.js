@@ -1,6 +1,7 @@
 "use strict";
 
 var url = require('url');
+var querystring = require('querystring');
 
 //  read from start/0 up to the next newline. returns null if no newline found, else
 //  {
@@ -52,6 +53,20 @@ var readHeader = function(buf, start, len) {
   };
 };
 
+// some urls were not parsing correctly (twitter.com) as they had ports included (twitter.com:443)
+// partially copied from isaacs/url-parse-as-address and optimised
+var parseUrlOrAddress = function parseUrlOrAddress(uri) {
+  var parsed = url.parse(uri, false);
+  if (!parsed.slashes) {
+    parsed = url.parse('http://' + uri, false);
+  } else if (!parsed.protocol) {
+    parsed = url.parse('http:' + uri, false);
+  }
+
+  parsed.query = querystring.parse(parsed.query);
+  return parsed;
+}
+
 //  read from start/0 up to the next newline and parse as a HTTP/ICAP method line.
 //  returns null if not valid method line or:
 //  {
@@ -71,7 +86,7 @@ var readMethod = function(buf, start, len) {
   }
   var method = tokens.shift();
   var uri = tokens.shift();
-  var parsedUri = url.parse(uri, true);
+  var parsedUri = parseUrlOrAddress(uri);
   var version = tokens.join(' ');
   return {
     method: method,
