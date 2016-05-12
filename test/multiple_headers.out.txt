@@ -1,0 +1,22 @@
+ICAP/1.0 200 OK
+Host: icap-server.net
+Encapsulated: req-hdr=0, req-body=325
+Date: Fri, 24 Jan 2014 00:20:14 GMT
+ISTag: NODECAP-1390522814321
+Server: Nodecap/1.0
+
+POST /origin-resource/form.pl?posting HTTP/1.1
+Host: www.origin-server.com
+Accept: text/html, text/plain
+Set-Cookie: MoodleSession=usdecqmal2h23rdh1c7hqjcuj3; path=/
+Set-Cookie: MOODLEID1_=deleted; expires=Thu, 01-Jan-1970 00:00:01 GMT; Max-Age=0; path=/
+Accept-Encoding: compress
+Pragma: no-cache
+X-Other: posting
+
+1e
+I am posting this information.
+1f
+I was posting that information.
+0
+

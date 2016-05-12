@@ -36,19 +36,20 @@ var readHeader = function(buf, start, len) {
   if (!line) {
     return null;
   }
-  var tokens = line.str.split(':');
-  if (tokens.length < 2) {
+  var str = line.str;
+  var delim = str.indexOf(":");
+  if (delim < 0) {
     return null;
   }
-  var header = tokens.shift();
-  var value = tokens.join(':');
-  if (value.length > 0 && value[0] === ' ') {
-    value = value.substr(1)
+  var header = str.slice(0, delim);
+  delim += 1;
+  if (delim < str.length && str.charAt(delim) === ' ') {
+    ++delim;
   }
-  var result = {};
-  result[header] = value;
+  var value = str.slice(delim);
   return {
-    header: result,
+    header: header,
+    value: value,
     index: line.index
   };
 };

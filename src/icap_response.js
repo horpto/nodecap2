@@ -18,9 +18,9 @@ var ICAPResponse = module.exports = function(id, stream, options) {
   this.allowUnchangedAllowed = true;
   this.chunkSize = 'chunkSize' in options ? options.chunkSize : 4096;
   this.icapStatus = null;
-  this.icapHeaders = null;
+  this.icapHeaders = {};
   this.httpMethod = null;
-  this.httpHeaders = null;
+  this.httpHeaders = {};
   this.buffer = null;
 };
 util.inherits(ICAPResponse, Response);
@@ -37,7 +37,7 @@ _.assign(ICAPResponse.prototype, {
     this.icapStatus = this._getCode(code, options);
   },
   setIcapHeaders: function(headers) {
-    this.icapHeaders = _.assign(this.icapHeaders || {}, headers);
+    this.icapHeaders = _.assign(this.icapHeaders, headers);
   },
   setHttpMethod: function(options) {
     this.httpMethodType = 'request';
@@ -54,7 +54,7 @@ _.assign(ICAPResponse.prototype, {
     this.httpMethod = this._getCode(code, options);
   },
   setHttpHeaders: function(headers) {
-    this.httpHeaders = _.assign(this.httpHeaders || {}, headers);
+    this.httpHeaders = _.assign(this.httpHeaders, headers);
   },
   hasFilter: function() {
     return typeof this.filter === 'function';
@@ -67,22 +67,30 @@ _.assign(ICAPResponse.prototype, {
     this.buffer = isBuffer ? new Buffer(0) : null;
     this.filter = filterFn;
   },
+  _joinHeaders: function (status, headers) {
+    var block = status.join(' ') + crlf;
+    for (var key in headers) {
+      var value = headers[key];
+      if (Array.isArray(value)) {
+        for (var i = 0, l=value.length; i< l; ++i) {
+          block += key + ": " + value[i] + crlf;
+        }
+      } else {
+        block += key + ": " + value + crlf;
+      }
+    }
+    return block;
+  },
   writeHeaders: function(hasBody) {
     var headerBlock = '';
     if (!this.icapStatus) {
       // TODO: user should always call setIcapStatusCode(), could throw error
       this.setIcapStatusCode();
     }
-    this.icapHeaders = this.icapHeaders || {};
 
     // http status/headers
     if (!!this.httpMethodType) {
-      headerBlock += this.httpMethod.join(' ') + crlf;
-      _.each(this.httpHeaders || {}, function(value, key) {
-        headerBlock += key + ': ' + value + crlf;
-      });
-      headerBlock += crlf;
-
+      headerBlock = this._joinHeaders(this.httpMethod, this.httpHeaders) + crlf;
       var encapsulated = [];
       var bodyType = "null-body";
       if (this.httpMethodType === 'request') {
@@ -108,11 +116,7 @@ _.assign(ICAPResponse.prototype, {
     }
 
     // icap status/headers
-    var icapBlock = this.icapStatus.join(' ') + crlf;
-    _.each(this.icapHeaders, function(value, key) {
-      icapBlock += key + ': ' + value + crlf;
-    });
-
+    var icapBlock = this._joinHeaders(this.icapStatus, this.icapHeaders);
     this.stream.write(icapBlock + crlf + headerBlock);
   },
   allowUnchanged: function(icapResponse) {

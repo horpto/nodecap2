@@ -243,7 +243,15 @@ ICAPHandler.prototype = {
     var header = null;
     var headers = {};
     while ((header = this.read(helpers.header)) !== null) {
-      _.assign(headers, header.header);
+      var headerName = header.header;
+      if (headerName in headers) {
+        if (!Array.isArray(headers[headerName])) {
+          headers[headerName] = [headers[headerName]];
+        }
+        headers[headerName].push(header.value);
+      } else {
+        headers[headerName] = header.value;
+      }
 
       if (this.read(helpers.newline).newline) {
         return headers;
