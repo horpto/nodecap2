@@ -64,6 +64,12 @@ var acceptRequest = function(icapReq, icapRes, req, res) {
     icapRes.allowUnchanged();
     return;
   }
+  // only example how are presented multiple headers in request
+  req.headers['X-Example'] = ['flag{12345-FirstHeader}', 'second header'];
+  // Response will contain two different header:
+  // X-Example: flag{12345-FirstHeader}
+  // X-Example: second header
+
   icapRes.setIcapStatusCode(200);
   icapRes.setIcapHeaders(icapReq.headers);
   if (icapReq.isReqMod()) {

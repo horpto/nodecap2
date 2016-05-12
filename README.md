@@ -4,7 +4,6 @@ nodecap2
 [![Join the chat at https://gitter.im/horpto/nodecap2](https://badges.gitter.im/horpto/nodecap2.svg)](https://gitter.im/horpto/nodecap2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 It is fork of [nodecap](https://www.npmjs.com/package/nodecap) with some fixes and performance improvements.
-I didn't change gh pages, docs and tests yet.
 
 ICAP server framework for node.js - create custom HTTP proxy filters for Squid, etc. **nodecap** implements the [ICAP protocol](http://www.icap-forum.org/documents/specification/rfc3507.txt).
 
