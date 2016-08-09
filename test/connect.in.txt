@@ -1,0 +1,13 @@
+REQMOD icap://icap-server.net/request ICAP/1.0
+Host: icap-server.net
+Encapsulated: req-hdr=0, req-body=59
+
+CONNECT 212.188.15.212:443 HTTP/1.1
+Host: 212.188.15.212
+
+1e
+I am posting this information.
+1f
+I was posting that information.
+0
+

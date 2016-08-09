@@ -1,0 +1,16 @@
+ICAP/1.0 200 OK
+Host: icap-server.net
+Encapsulated: req-hdr=0, req-body=61
+Date: Fri, 24 Jan 2014 00:20:14 GMT
+ISTag: NODECAP-1390522814321
+Server: Nodecap/1.0
+
+CONNECT 212.188.15.212:443 HTTP/1.1
+Host: 212.188.15.212
+
+1e
+I am posting this information.
+1f
+I was posting that information.
+0
+

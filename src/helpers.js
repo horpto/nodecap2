@@ -55,13 +55,18 @@ var readHeader = function(buf, start, len) {
 };
 
 // some urls were not parsing correctly (twitter.com) as they had ports included (twitter.com:443)
-// partially copied from isaacs/url-parse-as-address and optimised
+// partially copied from isaacs/url-parse-as-address and optimised.
+//
+// if uri contains 443 port so it's should be https, not http.
+// it's dumb way but suitable for most cases.
 var parseUrlOrAddress = function parseUrlOrAddress(uri) {
   var parsed = url.parse(uri, false);
   if (!parsed.slashes) {
-    parsed = url.parse('http://' + uri, false);
+    var prot = uri.indexOf(':443') > -1 ? "https://" : "http://";
+    parsed = url.parse(prot + uri, false);
   } else if (!parsed.protocol) {
-    parsed = url.parse('http:' + uri, false);
+    var prot = uri.indexOf(':443') > -1 ? "https:" : "http:";
+    parsed = url.parse(prot + uri, false);
   }
 
   parsed.query = querystring.parse(parsed.query);
