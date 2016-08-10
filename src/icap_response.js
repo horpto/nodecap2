@@ -1,11 +1,12 @@
 "use strict";
 
 var util = require('util');
-var _ = require('lodash');
 var Response = require('./response');
 var codes = require('./codes');
 var currentISTag = "NODECAP-" + (new Date()).getTime();
 var crlf = '\r\n';
+
+var assign = require('./utils').assign;
 
 var ICAPResponse = module.exports = function(id, stream, options) {
   Response.call(this);
@@ -27,7 +28,7 @@ util.inherits(ICAPResponse, Response);
 
 ICAPResponse.continueEvent = 'continueEvent';
 
-_.assign(ICAPResponse.prototype, {
+assign(ICAPResponse.prototype, {
   _getCode: function(code, options) {
     code = code || 500;
     options = options || {};
@@ -37,14 +38,14 @@ _.assign(ICAPResponse.prototype, {
     this.icapStatus = this._getCode(code, options);
   },
   setIcapHeaders: function(headers) {
-    this.icapHeaders = _.assign(this.icapHeaders, headers);
+    this.icapHeaders = assign(this.icapHeaders, headers);
   },
   setHttpMethod: function(options) {
     this.httpMethodType = 'request';
     this.httpMethod = [options.method, options.uri, options.version || 'HTTP/1.1'];
   },
   setHttpStatus: function(code, options) {
-    if (_.isObject(code)) {
+    if (typeof code === 'object') {
       options = code;
       code = options.code || null;
     }
@@ -54,7 +55,7 @@ _.assign(ICAPResponse.prototype, {
     this.httpMethod = this._getCode(code, options);
   },
   setHttpHeaders: function(headers) {
-    this.httpHeaders = _.assign(this.httpHeaders, headers);
+    this.httpHeaders = assign(this.httpHeaders, headers);
   },
   hasFilter: function() {
     return typeof this.filter === 'function';

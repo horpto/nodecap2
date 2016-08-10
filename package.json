@@ -9,11 +9,10 @@
   },
   "dependencies": {
     "eventemitter2": "^0.4.14",
-    "lodash": "^4.3.0",
     "winston": "^2.1.1"
   },
   "optionalDependencies": {
-    "mmmagic": "~0.3.6"
+    "mmmagic": "^0.4.0"
   },
   "devDependencies": {
     "tap": "~0.4.8"

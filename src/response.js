@@ -1,8 +1,8 @@
 "use strict";
 
 var util = require('util');
-var _ = require('lodash');
 var EventEmitter2 = require('eventemitter2').EventEmitter2;
+var assign = require('./utils').assign;
 
 var Response = module.exports = function(stream) {
   EventEmitter2.call(this, {});
@@ -13,12 +13,12 @@ var Response = module.exports = function(stream) {
 };
 util.inherits(Response, EventEmitter2);
 
-_.assign(Response.prototype, {
+assign(Response.prototype, {
   setHeaders: function(headers) {
     if (!this.headers) {
       this.headers = headers;
       return;
     }
-    _.assign(this.headers, headers);
+    assign(this.headers, headers);
   }
 });

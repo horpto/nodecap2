@@ -2,13 +2,14 @@
 
 var net = require('net');
 var util = require('util');
-var _ = require('lodash');
 var winston = require('winston');
 var EventEmitter2 = require('eventemitter2').EventEmitter2;
 var ICAPHandler = require('./icap_handler');
 var DomainList = require('./domainlist');
 
-var noop = function() {};
+var _utils = require('./utils');
+var noop = _utils.noop;
+var assign = _utils.assign;
 
 /*
  *  ICAPServer
@@ -28,10 +29,10 @@ function ICAPServer(options) {
     ]
   });
 
-  options = _.defaults(options || {}, {
+  options = assign({
     logger: this.logger,
     chunkSize: 4096
-  });
+  }, options || {});
 
   this.server = net.createServer(function(stream) {
     var handler = new ICAPHandler(stream, this, options);
@@ -146,7 +147,7 @@ function ICAPServer(options) {
   }.bind(this));
 }
 
-ICAPServer.prototype = _.assign({}, EventEmitter2.prototype, {
+ICAPServer.prototype = assign({}, EventEmitter2.prototype, {
   constructor: ICAPServer,
 
   listen: function(port, fn) {

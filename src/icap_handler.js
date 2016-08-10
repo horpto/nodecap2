@@ -1,8 +1,6 @@
 "use strict";
 
 var net = require('net');
-var _ = require('lodash');
-
 var ICAPError = require('./icap_error');
 var ICAPRequest = require('./icap_request');
 var ICAPResponse = require('./icap_response');
@@ -10,6 +8,10 @@ var HTTPRequest = require('./http_request');
 var HTTPResponse = require('./http_response');
 var helpers = require('./helpers');
 var codes = require('./codes');
+
+var _utils = require('./utils');
+var assign = _utils.assign;
+var uniqueId = _utils.uniqueId;
 
 var states = {
   'icapmethod': 'icapmethod',
@@ -104,7 +106,7 @@ ICAPHandler.prototype = {
     if (this.icapRequest) {
       this.icapRequest.removeAllListeners();
     }
-    var id = process.pid + '::' + _.uniqueId();
+    var id = process.pid + '::' + uniqueId();
     this.id = id;
     this.state = states.icapmethod;
     this.icapRequest = new ICAPRequest(this.id);
@@ -334,7 +336,7 @@ ICAPHandler.prototype = {
     if (!status) {
       throw new ICAPError('Response method not found');
     }
-    _.assign(this.httpResponse, status);
+    assign(this.httpResponse, status);
 
     var headers = this.readAllHeaders();
     if (!headers) {

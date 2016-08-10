@@ -1,15 +1,16 @@
 "use strict";
 
 var util = require('util');
-var _ = require('lodash');
 var Request = require('./request');
 var magic = null;
+
+var assign = require('./utils').assign;
 
 try {
   var mmm = require('mmmagic');
   magic = new mmm.Magic(mmm.MAGIC_MIME_TYPE);
 } catch (err) {
-  console.warn('Can not import mmagic');
+  console.warn('Can not import mmmagic');
 }
 
 var ICAPRequest = module.exports = function(id) {
@@ -21,7 +22,7 @@ var ICAPRequest = module.exports = function(id) {
 };
 util.inherits(ICAPRequest, Request);
 
-_.assign(ICAPRequest.prototype, {
+assign(ICAPRequest.prototype, {
   push: function(data) {
     if (this.stream) {
       this.stream._write(data);
@@ -59,6 +60,6 @@ _.assign(ICAPRequest.prototype, {
     if (magic != null) {
       return magic.detect(this.preview, cb);
     }
-    return cb(new Error("'mmagic' not loaded"), null);
+    return cb(new Error("'mmmagic' not loaded"), null);
   }
 });
