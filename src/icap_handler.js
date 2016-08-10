@@ -272,7 +272,7 @@ ICAPHandler.prototype = {
     }
     this.icapRequest.setMethod(method);
 
-    this.logger.verbose('[%s] icapmethod %j', this.id, method, '');
+    this.logger.verbose('[%s] icapmethod:', this.id, method.line);
     this.emitEvent('icapMethod');
     this.nextState(states.icapheader);
   },
@@ -324,7 +324,7 @@ ICAPHandler.prototype = {
       throw new ICAPError('Request headers not found');
     }
     this.httpRequest.setHeaders(headers);
-    this.logger.verbose('[%s] requestheader %j', this.id, this.httpRequest, '');
+    this.logger.verbose('[%s] HTTP Req method: %s, headers: %j', this.id, method.line, headers, '');
     if (this.icapRequest.isReqMod() && !this.parsePreview) {
       this.emitEvent('httpRequest');
     }
@@ -343,7 +343,7 @@ ICAPHandler.prototype = {
       throw new ICAPError('Response headers not found');
     }
     this.httpResponse.setHeaders(headers);
-    this.logger.verbose('[%s] responseheader %j', this.id, this.httpResponse, '');
+    this.logger.verbose('[%s] HTTP Res status: %s headers: %j', this.id, status.line, headers, '');
     if (this.icapRequest.isRespMod() && !this.parsePreview) {
       this.emitEvent('httpResponse');
     }

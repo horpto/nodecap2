@@ -99,7 +99,8 @@ var readMethod = function(buf, start, len) {
     uri: uri,
     parsedUri: parsedUri,
     version: version,
-    index: line.index
+    index: line.index,
+    line: line.str
   };
 };
 
@@ -119,7 +120,8 @@ var readStatus = function(buf, start, len) {
     version: version,
     code: parseInt(code) || 503,
     message: message,
-    index: line.index
+    index: line.index,
+    line: line.str
   };
 };
 
