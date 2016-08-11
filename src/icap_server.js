@@ -63,7 +63,7 @@ function ICAPServer(options) {
     } finally {
       this.logger.error('%s ERROR - %s - %s', this.id, (icapRes.icapStatus || [null,null,null]).join(' '), err.message || 'Unknown Error');
     }
-  }.bind(this));
+  }, this);
 
   this._optionsCallbacks = [];
   this.on('icapOptions', function(icapReq, icapRes) {
@@ -89,7 +89,7 @@ function ICAPServer(options) {
     } catch (e) {
       this.emit('error', e, icapReq, icapRes);
     }
-  }.bind(this));
+  }, this);
 
   this._requestCallbacks = [];
   this.on('httpRequest', function(icapReq, icapRes, req, res) {
@@ -115,7 +115,7 @@ function ICAPServer(options) {
     } catch (e) {
       this.emit('error', e, icapReq, icapRes);
     }
-  }.bind(this));
+  }, this);
 
   this._responseCallbacks = [];
   this.on('httpResponse', function(icapReq, icapRes, req, res) {
@@ -141,7 +141,7 @@ function ICAPServer(options) {
     } catch (e) {
       this.emit('error', e, icapReq, icapRes);
     }
-  }.bind(this));
+  }, this);
 }
 
 ICAPServer.prototype = assign({}, EventEmitter.prototype, {
