@@ -1,4 +1,5 @@
 "use strict";
+
 var cluster = require('cluster');
 
 var assign = Object.assign != null ? Object.assign : require('util')._extend;

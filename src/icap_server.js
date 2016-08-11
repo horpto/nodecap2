@@ -166,6 +166,9 @@ ICAPServer.prototype = assign({}, EventEmitter2.prototype, {
   },
 
   error: function(cb) {
+    if (typeof cb != 'function') {
+        throw new TypeError("expected function, not " + typeof cb);
+    }
     this._errorCallbacks.push(cb);
   },
 
@@ -174,6 +177,9 @@ ICAPServer.prototype = assign({}, EventEmitter2.prototype, {
       path = null;
     } else if (!(path instanceof RegExp)) {
       path = new RegExp('^' + path + '$');
+    }
+    if (typeof cb != "function") {
+        throw new TypeError("expected function, not " + typeof cb);
     }
     this._optionsCallbacks.push([path, cb]);
   },
@@ -188,6 +194,9 @@ ICAPServer.prototype = assign({}, EventEmitter2.prototype, {
       domainList = new DomainList();
       domainList.add(domain);
     }
+    if (typeof cb != "function") {
+        throw new TypeError("expected function, not " + typeof cb);
+    }
     this._requestCallbacks.push([domainList, cb]);
   },
 
@@ -200,6 +209,9 @@ ICAPServer.prototype = assign({}, EventEmitter2.prototype, {
     } else {
       domainList = new DomainList();
       domainList.add(domain);
+    }
+    if (typeof cb != "function") {
+        throw new TypeError("expected function, not " + typeof cb);
     }
     this._responseCallbacks.push([domainList, cb]);
   }
