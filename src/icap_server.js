@@ -3,7 +3,7 @@
 var net = require('net');
 var util = require('util');
 var winston = require('winston');
-var EventEmitter2 = require('eventemitter2').EventEmitter2;
+var EventEmitter = require('eventemitter3');
 var ICAPHandler = require('./icap_handler');
 var DomainList = require('./domainlist');
 
@@ -15,10 +15,7 @@ var assign = _utils.assign;
  *  ICAPServer
  */
 function ICAPServer(options) {
-  EventEmitter2.call(this, {
-    wildcard: true,
-    delimiter: '/'
-  });
+  EventEmitter.call(this);
   this.id = util.format('[%d::server]', process.pid);
   this.logger = options.logger || new winston.Logger({
     transports: [
@@ -147,7 +144,7 @@ function ICAPServer(options) {
   }.bind(this));
 }
 
-ICAPServer.prototype = assign({}, EventEmitter2.prototype, {
+ICAPServer.prototype = assign({}, EventEmitter.prototype, {
   constructor: ICAPServer,
 
   listen: function(port, fn) {

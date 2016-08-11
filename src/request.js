@@ -1,18 +1,18 @@
 "use strict";
 
 var util = require('util');
-var EventEmitter2 = require('eventemitter2').EventEmitter2;
+var EventEmitter = require('eventemitter3');
 var assign = require('./utils').assign;
 
 var Request = module.exports = function() {
-  EventEmitter2.call(this, {});
+  EventEmitter.call(this);
   this.headers = null;
   this.method = '';
   this.uri = null;
   this.version = null;
   this.parsedUri = null;
 };
-util.inherits(Request, EventEmitter2);
+util.inherits(Request, EventEmitter);
 
 assign(Request.prototype, {
   setHeaders: function(headers) {
