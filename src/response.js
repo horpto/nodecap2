@@ -3,9 +3,9 @@
 var assign = require('./utils').assign;
 
 // use as mixin, not classical inheritance
-var Response = module.exports = function(stream) {
+var Response = module.exports = function(protocol) {
   this.headers = {};
-  this.protocol = '';
+  this.protocol = protocol || "";
   this.version = '';
   this.code = 200;
 };

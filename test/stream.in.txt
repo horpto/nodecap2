@@ -1,0 +1,15 @@
+REQMOD icap://icap-server.net/request ICAP/1.0
+Host: icap-server.net
+Encapsulated: req-hdr=0, req-body=173
+
+POST /origin-resource/form.pl?posting HTTP/1.1
+Host: www.origin-server.com
+Accept: text/html, text/plain
+Accept-Encoding: compress
+Pragma: no-cache
+X-Other: posting
+
+POST_FIRST_CHUNK_HERE
+POST_SECOND_CHUNK_HERE
+0
+

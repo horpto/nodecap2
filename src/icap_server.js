@@ -61,7 +61,7 @@ function ICAPServer(options) {
         // can't do anything
       }
     } finally {
-      this.logger.error('%s ERROR - %s - %s', this.id, (icapRes.icapStatus || [null,null,null]).join(' '), err.message || 'Unknown Error');
+      this.logger.error('%s ERROR - %s - %s', this.id, (icapRes.icapStatus || [null,null,null]).join(' '), err.stack || 'Unknown Error');
     }
   }, this);
 

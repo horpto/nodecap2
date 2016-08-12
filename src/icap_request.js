@@ -20,6 +20,7 @@ var ICAPRequest = module.exports = function(id) {
 
   this.id = id;
   this.stream = null;
+  this.isPrevVersionProto = false;
   this.preview = null;
   this.ieof = false;
 };
@@ -27,15 +28,20 @@ util.inherits(ICAPRequest, EventEmitter);
 
 assign(ICAPRequest.prototype, Request.prototype, {
   push: function(data) {
-    if (this.stream) {
-      this.stream._write(data);
-      if (!data) {
-        this.stream.end();
-      }
+    if (!this.stream) {
+      return;
     }
+    if (this.isPrevVersionProto) {
+      return this.stream._write(data);
+    }
+    if (data) {
+      return this.stream.write(data);
+    }
+    return this.stream.end();
   },
   pipe: function(stream) {
     this.stream = stream;
+    this.isPrevVersionProto = stream.write == null;
   },
   hasPreview: function() {
     return this.headers && 'Preview' in this.headers;
