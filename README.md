@@ -64,7 +64,7 @@ Allows configuration of a given ICAP endpoint. To set the options for endpoint `
 
 ## API Routing
 
-**nodecap** presents an expressjs-style API where middleware can be declared and matched to requests. Instead of request URI/method combinations, the unit of matching is domains through the `DomainList` class, which implements an efficient matcher for squid3 whitelist/blacklist syntax. Middlware is attached to handle requests to / responses from lists of domains:
+**nodecap** presents an expressjs-style API where middleware can be declared and matched to requests. Instead of request URI/method combinations, the unit of matching is domains through the `DomainList` class, which implements an efficient matcher for squid3 whitelist/blacklist syntax. Middleware is attached to handle requests to / responses from lists of domains:
 
 ### `server.request(domainList, next)`
 Adds middleware to handle a REQMOD (HTTP request modification). The callback signature is `callback(icapRequest, icapResponse, httpRequest, httpResponse, next)`. Calling `next()` is optional and will continue to the next handler. Be sure to have a catch-all handler at the end. `domainList` can be either a DomainList instance - which allows matching request domains against a configured list - or the literal string`"*"` to match all requests.

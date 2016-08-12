@@ -1,10 +1,11 @@
 "use strict";
 
 var util = require('util');
+var EventEmitter = require('eventemitter3');
 var Request = require('./request');
-var magic = null;
-
 var assign = require('./utils').assign;
+
+var magic = null;
 
 try {
   var mmm = require('mmmagic');
@@ -15,14 +16,16 @@ try {
 
 var ICAPRequest = module.exports = function(id) {
   Request.call(this);
+  EventEmitter.call(this);
+
   this.id = id;
   this.stream = null;
   this.preview = null;
   this.ieof = false;
 };
-util.inherits(ICAPRequest, Request);
+util.inherits(ICAPRequest, EventEmitter);
 
-assign(ICAPRequest.prototype, {
+assign(ICAPRequest.prototype, Request.prototype, {
   push: function(data) {
     if (this.stream) {
       this.stream._write(data);

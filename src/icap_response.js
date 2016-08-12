@@ -149,7 +149,7 @@ assign(ICAPResponse.prototype, {
         }
         return;
       }
-      // filter output and abort if no reponse
+      // filter output and abort if no response
       // note: this allows filter authors to buffer data internally
       // and call response.send(data) once filter receives a `null`
       if (this.filter) {

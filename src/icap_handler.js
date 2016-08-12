@@ -56,7 +56,7 @@ ICAPHandler.prototype = {
     });
 
     socket.on('data', function(data) {
-      if (self.buffer.length == 0) {
+      if (self.buffer.length === 0) {
         self.buffer = data;
       } else {
         self.buffer = Buffer.concat([self.buffer, data], self.buffer.length + data.length);
