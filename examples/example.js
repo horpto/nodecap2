@@ -106,6 +106,8 @@ var rejectRequest = function(icapReq, icapRes, req, res) {
   } else {
     icapRes.writeHeaders(false);
   }
+  // WARNING: don't forget to write.end() after .send()
+  // or your data will not send.:(
   icapRes.end();
 };
 

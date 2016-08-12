@@ -188,7 +188,6 @@ ICAPHandler.prototype = {
         this.emitEvent(this.icapRequest.isReqMod() ? 'httpRequestNullBody' : 'httpResponseNullBody');
         this.logger.debug('[%s] null-body]', this.id);
         this.icapRequest.push(null);
-        this.icapResponse.end();
         this.resetState();
         this.nextState();
         break;
@@ -392,7 +391,6 @@ ICAPHandler.prototype = {
     }
     if (this.icapRequest.ieof) {
       this.icapRequest.push(null);
-      this.icapResponse.end();
       this.resetState();
       this.nextState();
       return;
@@ -405,7 +403,6 @@ ICAPHandler.prototype = {
       if (body.eof) {
         this.logger.debug('[%s] parsebody eof', this.id);
         this.icapRequest.push(null);
-        this.icapResponse.end();
         this.resetState();
         this.nextState();
         break;

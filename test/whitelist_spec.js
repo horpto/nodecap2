@@ -23,6 +23,7 @@ helpers.testIO('server should allow whitelist and block unlisted domains', 'whit
     icapRes.setHttpHeaders(req.headers);
     icapRes.writeHeaders(true);
     icapRes.send('NO');
+    icapRes.end();
   });
 
   setTimeout(cb, 1500);

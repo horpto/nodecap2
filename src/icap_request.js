@@ -29,6 +29,9 @@ assign(ICAPRequest.prototype, Request.prototype, {
   push: function(data) {
     if (this.stream) {
       this.stream._write(data);
+      if (!data) {
+        this.stream.end();
+      }
     }
   },
   pipe: function(stream) {
