@@ -4,7 +4,9 @@ var util = require('util');
 var Response = require('./response');
 var codes = require('./codes');
 var currentISTag = "NODECAP-" + (new Date()).getTime();
+
 var crlf = '\r\n';
+var DEFAULT_CHUNK_SIZE = 4096;
 
 var assign = require('./utils').assign;
 
@@ -17,7 +19,7 @@ var ICAPResponse = module.exports = function(id, stream, options) {
   this.filter = null;
   this.sendData = null;
   this.allowUnchangedAllowed = true;
-  this.chunkSize = 'chunkSize' in options ? options.chunkSize : 4096;
+  this.chunkSize = 'chunkSize' in options ? options.chunkSize : DEFAULT_CHUNK_SIZE;
   this.icapStatus = null;
   this.icapHeaders = {};
   this.httpMethod = null;
@@ -127,55 +129,79 @@ assign(ICAPResponse.prototype, {
       this.end();
     }
   },
+
   continuePreview: function() {
     var code = this._getCode(100);
     this.stream.write(code.join(' ') + crlf + crlf);
   },
-  _write: function(data) {
-    var tmp;
-    if (data) {
-      if (this.buffer) {
-        this.buffer = Buffer.concat([this.buffer, data], this.buffer.length + data.length);
+
+  _writeHandyChunk: function(data) {
+    // filter output and abort if no response
+    // note: this allows filter authors to buffer data internally
+    // and call response.send(data) once filter receives a `null`
+    if (this.filter) {
+      data = this.filter(data);
+      if (!data) {
         return;
       }
-      if (this.chunkSize && data.length > this.chunkSize) {
-        var size = this.chunkSize; // 4096 bytes by default
-        tmp = data.slice(0, size);
-        data = data.slice(size);
-        while (tmp.length) {
-          this._write(tmp);
-          tmp = data.slice(0, size);
-          data = data.slice(size);
-        }
-        return;
-      }
-      // filter output and abort if no response
-      // note: this allows filter authors to buffer data internally
-      // and call response.send(data) once filter receives a `null`
-      if (this.filter) {
-        data = this.filter(data);
-      }
-      // ensure that data is in buffer form for accurate length measurements
-      // and to avoid encoding issues when writing
-      tmp = data instanceof Buffer ? data : new Buffer(data);
-      this.stream.write(tmp.length.toString(16) + crlf);
-      this.stream.write(tmp);
-      this.stream.write(crlf);
-    } else {
-      // alert the filter that stream is over
-      // can return data to write it before the stream is ended
-      if (this.filter && this.buffer) {
-        data = this.filter(this.buffer);
-        this.filter = null;
-        this.buffer = null;
-        this._write(data);
-      }
-      this.stream.write('0\r\n\r\n');
+    }
+    // ensure that data is in buffer form for accurate length measurements
+    // and to avoid encoding issues when writing
+    var tmp = Buffer.isBuffer(data) ? data : new Buffer(data);
+    this.stream.write(tmp.length.toString(16) + crlf);
+    this.stream.write(tmp);
+    this.stream.write(crlf);
+  },
+
+  // TODO: more async
+  _divideIntoHandyChunks: function(data) {
+    var size = this.chunkSize;
+    var tmp = data.slice(0, size);
+    data = data.slice(size);
+    while (tmp.length) {
+      this._writeHandyChunk(tmp);
+      tmp = data.slice(0, size);
+      data = data.slice(size);
     }
   },
+
+  _writeChunk: function(data) {
+    if (this.buffer) {
+      this.buffer = Buffer.concat([this.buffer, data], this.buffer.length + data.length);
+      return;
+    }
+    if (data.length > this.chunkSize) {
+      return this._divideIntoHandyChunks(data);
+    }
+    return this._writeHandyChunk(data);
+  },
+
+  _streamIsOver: function() {
+    // alert the filter that stream is over
+    // can return data to write it before the stream is ended
+    if (this.filter && this.buffer) {
+      var data = this.filter(this.buffer);
+      this.filter = null;
+      this.buffer = null;
+      if (data) {
+        this._write(data);
+      }
+    }
+    this.stream.write('0\r\n\r\n');
+  },
+
+  _write: function(data) {
+    if (data) {
+      this._writeChunk(data);
+    } else {
+      this._streamIsOver();
+    }
+  },
+
   send: function(data) {
     this.sendData = data;
   },
+
   end: function() {
     if (this.done) {
       return;
