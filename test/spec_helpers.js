@@ -11,12 +11,14 @@ var dateReplace = 'Date: ' + (new Date()).toGMTString();
 var istagPattern = /ISTag\:\s*\S+/g;
 var istagReplace = 'ISTag: NODECAP-TEST';
 
+var sampleDir = 'samples/';
+
 var noop = function() {};
 
 var testIO = function(testName, sampleName, configureFn, configureInput) {
   configureFn = typeof configureFn === 'function' ? configureFn : null;
-  var input = fs.readFileSync(path.resolve(__dirname, sampleName + '.in.txt'), 'utf8');
-  var output = fs.readFileSync(path.resolve(__dirname, sampleName + '.out.txt'), 'utf8');
+  var input = fs.readFileSync(path.resolve(__dirname, sampleDir + sampleName + '.in.txt'), 'utf8');
+  var output = fs.readFileSync(path.resolve(__dirname, sampleDir + sampleName + '.out.txt'), 'utf8');
 
   test(testName, function(t) {
     var buffer = '';
