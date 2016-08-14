@@ -25,6 +25,7 @@ var ICAPResponse = module.exports = function(id, stream, options) {
   this.chunkSize = 'chunkSize' in options ? options.chunkSize : DEFAULT_CHUNK_SIZE;
   this.icapStatus = null;
   this.icapHeaders = {};
+  this.httpMethodType = '';
   this.httpMethod = null;
   this.httpHeaders = {};
   this.buffer = null;
@@ -75,44 +76,36 @@ assign(ICAPResponse.prototype, Response.prototype, {
     var block = status.join(' ') + crlf;
     for (var key in headers) {
       var value = headers[key];
+      key += ": ";
       if (Array.isArray(value)) {
-        for (var i = 0, l=value.length; i< l; ++i) {
-          block += key + ": " + value[i] + crlf;
+        for (var i = 0, l=value.length; i < l; ++i) {
+          block += key + value[i] + crlf;
         }
       } else {
-        block += key + ": " + value + crlf;
+        block += key + value + crlf;
       }
     }
     return block;
   },
-  writeHeaders: function(hasBody) {
-    this.hasBody = hasBody;
-
-    var headerBlock = '';
-    if (!this.icapStatus) {
-      // TODO: user should always call setIcapStatusCode(), could throw error
-      this.setIcapStatusCode();
-    }
-
-    // http status/headers
-    if (!!this.httpMethodType) {
-      headerBlock = this._joinHeaders(this.httpMethod, this.httpHeaders) + crlf;
-      var encapsulated = [];
-      var bodyType = "null-body";
-      if (this.httpMethodType === 'request') {
-        encapsulated.push('req-hdr=0');
-        if (hasBody) {
-          bodyType = 'req-body';
-        }
-      } else {
-        encapsulated.push('res-hdr=0');
-        if (hasBody) {
-          bodyType = 'res-body';
-        }
+  _setEncapsulatedHeader: function(hasBody, headerBlock) {
+    var encapsulated = [];
+    var bodyType = "null-body";
+    if (this.httpMethodType === 'request') {
+      encapsulated.push('req-hdr=0');
+      if (hasBody) {
+        bodyType = 'req-body';
       }
-      encapsulated.push(bodyType + '=' + headerBlock.length);
-      this.icapHeaders['Encapsulated'] = encapsulated.join(', ');
+    } else {
+      encapsulated.push('res-hdr=0');
+      if (hasBody) {
+        bodyType = 'res-body';
+      }
     }
+    encapsulated.push(bodyType + '=' + headerBlock.length);
+    this.icapHeaders['Encapsulated'] = encapsulated.join(', ');
+  },
+
+  _checkDefaultIcapHeaders: function() {
     this.icapHeaders['Date'] = (new Date()).toGMTString();
     if (!this.icapHeaders['ISTag']) {
       this.icapHeaders['ISTag'] = currentISTag;
@@ -120,13 +113,31 @@ assign(ICAPResponse.prototype, Response.prototype, {
     if (!this.icapHeaders['Server']) {
       this.icapHeaders['Server'] = "Nodecap/1.0";
     }
+  },
 
+  writeHeaders: function(hasBody) {
+    this.hasBody = hasBody;
+
+    if (!this.icapStatus) {
+      // TODO: user should always call setIcapStatusCode(), could throw error
+      this.setIcapStatusCode();
+    }
+    // http status/headers
+    var headerBlock = '';
+    if (!!this.httpMethodType) {
+      headerBlock = this._joinHeaders(this.httpMethod, this.httpHeaders) + crlf;
+      this._setEncapsulatedHeader(hasBody, headerBlock);
+    }
     // icap status/headers
+    this._checkDefaultIcapHeaders()
     var icapBlock = this._joinHeaders(this.icapStatus, this.icapHeaders);
     this.stream.write(icapBlock + crlf + headerBlock);
   },
+
   allowUnchanged: function(icapResponse) {
-    if (this.allowUnchangedAllowed) {
+    // check if ICAP server signaled 204
+    // or server is in preview mode (not sent headers),
+    if (this.icapHeaders['Allow'].indexOf('204') || !this.icapStatus) {
       this.setIcapStatusCode(204);
       this.writeHeaders(false);
       this.end();
