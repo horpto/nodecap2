@@ -9,9 +9,7 @@ var HTTPResponse = require('./http_response');
 var helpers = require('./helpers');
 var codes = require('./codes');
 
-var _utils = require('./utils');
-var assign = _utils.assign;
-var uniqueId = _utils.uniqueId;
+var assign = require('./utils').assign;
 
 var states = {
   'icapmethod': 'icapmethod',
@@ -24,11 +22,16 @@ var states = {
   'parsebody': 'parsebody'
 };
 
+var icapHandlerCount = 1;
+
 /*
  *  ICAPHandler
  *    Encapsulates handling of an ICAP client request.
  */
 function ICAPHandler(socket, emitter, options) {
+  this.handlerCount = '' + icapHandlerCount++;
+  this.currentQuery = 0;
+  this.id = '';
   this.emitter = emitter;
   this.socket = socket;
   this.logger = options.logger;
@@ -106,8 +109,7 @@ ICAPHandler.prototype = {
     if (this.icapRequest) {
       this.icapRequest.removeAllListeners();
     }
-    var id = process.pid + '::' + uniqueId();
-    this.id = id;
+    this.id = process.pid + ':' + this.handlerCount + ':' + this.currentQuery++;
     this.state = states.icapmethod;
     this.icapRequest = new ICAPRequest(this.id);
     this.icapResponse = new ICAPResponse(this.id, this.socket, this.options);
