@@ -27,7 +27,6 @@ var ICAPResponse = module.exports = function(id, stream, options) {
   this.filter = null;
   this.sendData = null;
   this.hasBody = false;
-  this.allowUnchangedAllowed = true;
   this.chunkSize = 'chunkSize' in options ? options.chunkSize : DEFAULT_CHUNK_SIZE;
   this.icapStatus = null;
   this.icapHeaders = {};
@@ -142,13 +141,10 @@ assign(ICAPResponse.prototype, Response.prototype, {
   },
 
   allowUnchanged: function(icapResponse) {
-    // check if ICAP server signaled 204
-    // or server is in preview mode (not sent headers),
-    if (this.icapHeaders['Allow'].indexOf('204') || !this.icapStatus) {
-      this.setIcapStatusCode(204);
-      this.writeHeaders(false);
-      this.end();
-    }
+    // user should check status 204 is allowed own
+    this.setIcapStatusCode(204);
+    this.writeHeaders(false);
+    this.end();
   },
 
   continuePreview: function() {
@@ -165,11 +161,10 @@ assign(ICAPResponse.prototype, Response.prototype, {
         return;
       }
     }
-    // ensure that data is in buffer form for accurate length measurements
-    // and to avoid encoding issues when writing
-    var tmp = Buffer.isBuffer(data) ? data : new Buffer(data);
-    this.push(tmp.length.toString(16) + crlf);
-    this.push(tmp);
+
+    // data are always Buffer instance due to 'decodeStrings: true' option.
+    this.push(data.length.toString(16) + crlf);
+    this.push(data);
     this.push(crlf);
   },
 
@@ -244,8 +239,10 @@ assign(ICAPResponse.prototype, Response.prototype, {
         this.write(this.sendData);
         this.sendData = null;
       }
-      return this._streamIsOver();
+      this._streamIsOver();
     }
-    return cb();
+    this.done = true;
+    this.unpipe();
+    cb();
   }
 });

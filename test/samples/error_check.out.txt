@@ -3,8 +3,3 @@ Date: Mon, 15 Aug 2016 12:26:32 GMT
 ISTag: NODECAP-TEST
 Server: Nodecap/1.0
 
-ICAP/1.0 500 Internal Server Error
-Date: Mon, 15 Aug 2016 12:26:32 GMT
-ISTag: NODECAP-TEST
-Server: Nodecap/1.0
-

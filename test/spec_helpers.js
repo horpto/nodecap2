@@ -65,8 +65,8 @@ var testIO = function(testName, sampleName, configureFn, configureInput) {
         client.end();
         buffer = buffer.replace(datePattern, dateReplace).replace(istagPattern, istagReplace);
         output = output.replace(datePattern, dateReplace).replace(istagPattern, istagReplace);
-        //console.error("BUFFER:", buffer);
-        //console.error("OUTPUT:", output);
+        console.error("BUFFER:", buffer);
+        console.error("OUTPUT:", output);
         t.equal(buffer, output, 'should have expected icap responses');
         server.close(function() {
           t.end();
