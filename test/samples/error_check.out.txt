@@ -1,5 +1,10 @@
 ICAP/1.0 500 Internal Server Error
-Date: Fri, 07 Mar 2014 22:55:37 GMT
+Date: Mon, 15 Aug 2016 12:26:32 GMT
+ISTag: NODECAP-TEST
+Server: Nodecap/1.0
+
+ICAP/1.0 500 Internal Server Error
+Date: Mon, 15 Aug 2016 12:26:32 GMT
 ISTag: NODECAP-TEST
 Server: Nodecap/1.0
 

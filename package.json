@@ -15,10 +15,11 @@
     "mmmagic": "^0.4.0"
   },
   "devDependencies": {
-    "tap": "~0.4.8"
+    "tap": "^6.3.2"
   },
   "scripts": {
-    "test": "tap ./test"
+    "tap": "tap",
+    "test": "tap ./test/*_spec.js"
   },
   "repository": {
     "type": "git",

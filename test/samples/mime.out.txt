@@ -1,5 +1,6 @@
 ICAP/1.0 200 OK
 Host: icap.example.org
+Preview: 51
 Encapsulated: res-hdr=0, res-body=159
 Date: Mon, 10 Jan 2000  09:55:21 GMT
 ISTag: "W3E4R7U9-L2E4-2"

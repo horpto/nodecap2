@@ -1,7 +1,7 @@
 "use strict";
 
 var util = require('util');
-var Writable = require('stream').Writable;
+var Transform = require('stream').Transform;
 var Response = require('./response');
 var codes = require('./codes');
 var currentISTag = "NODECAP-" + (new Date()).getTime();
@@ -13,9 +13,15 @@ var assign = require('./utils').assign;
 
 var ICAPResponse = module.exports = function(id, stream, options) {
   Response.call(this, 'ICAP');
-  Writable.call(this, options);
 
-  this.stream = stream;
+  options = assign(options || {}, {
+    encoding: null, decodeStrings: true,
+    objectMode: false,
+    read: null, write: null, writev: null});
+  Transform.call(this, options);
+
+  this.pipe(stream, {end: false});
+
   this.id = id;
   this.done = false;
   this.filter = null;
@@ -30,7 +36,7 @@ var ICAPResponse = module.exports = function(id, stream, options) {
   this.httpHeaders = {};
   this.buffer = null;
 };
-util.inherits(ICAPResponse, Writable);
+util.inherits(ICAPResponse, Transform);
 
 assign(ICAPResponse.prototype, Response.prototype, {
   _getCode: function(code, options) {
@@ -42,6 +48,7 @@ assign(ICAPResponse.prototype, Response.prototype, {
     this.icapStatus = this._getCode(code, options);
   },
   setIcapHeaders: function(headers) {
+    // TODO: filter headers???
     this.icapHeaders = assign(this.icapHeaders, headers);
   },
   setHttpMethod: function(options) {
@@ -131,7 +138,7 @@ assign(ICAPResponse.prototype, Response.prototype, {
     // icap status/headers
     this._checkDefaultIcapHeaders()
     var icapBlock = this._joinHeaders(this.icapStatus, this.icapHeaders);
-    this.stream.write(icapBlock + crlf + headerBlock);
+    this.push(icapBlock + crlf + headerBlock);
   },
 
   allowUnchanged: function(icapResponse) {
@@ -146,10 +153,10 @@ assign(ICAPResponse.prototype, Response.prototype, {
 
   continuePreview: function() {
     var code = this._getCode(100);
-    this.stream.write(code.join(' ') + crlf + crlf);
+    this.push(code.join(' ') + crlf + crlf);
   },
 
-  _writeHandyChunk: function(data, enc) {
+  _writeHandyChunk: function(data) {
     // filter output and abort if no response
     // note: this allows filter authors to buffer data internally
     if (this.filter) {
@@ -157,19 +164,17 @@ assign(ICAPResponse.prototype, Response.prototype, {
       if (!data) {
         return;
       }
-      // enc can be irrelevant after filter
-      enc = null;
     }
     // ensure that data is in buffer form for accurate length measurements
     // and to avoid encoding issues when writing
-    var tmp = Buffer.isBuffer(data) ? data : new Buffer(data, enc);
-    this.stream.write(tmp.length.toString(16) + crlf);
-    this.stream.write(tmp);
-    this.stream.write(crlf);
+    var tmp = Buffer.isBuffer(data) ? data : new Buffer(data);
+    this.push(tmp.length.toString(16) + crlf);
+    this.push(tmp);
+    this.push(crlf);
   },
 
   // TODO: more async
-  _divideIntoHandyChunks: function(data, enc, cb) {
+  _divideIntoHandyChunks: function(data, cb) {
     var size = this.chunkSize;
     var tmp = data.slice(0, size);
     data = data.slice(size);
@@ -181,16 +186,16 @@ assign(ICAPResponse.prototype, Response.prototype, {
     return cb();
   },
 
-  _writeChunk: function(data, enc, cb) {
+  _writeChunk: function(data, cb) {
     if (this.buffer) {
       // TODO: maybe concat in buffer
       this.buffer = Buffer.concat([this.buffer, data], this.buffer.length + data.length);
       return cb();
     }
     if (data.length > this.chunkSize) {
-      return this._divideIntoHandyChunks(data, enc, cb);
+      return this._divideIntoHandyChunks(data, cb);
     }
-    this._writeHandyChunk(data, enc);
+    this._writeHandyChunk(data);
     return cb();
   },
 
@@ -205,9 +210,18 @@ assign(ICAPResponse.prototype, Response.prototype, {
         this.write(data);
       }
     }
-    this.stream.write('0\r\n\r\n');
+    this.push('0\r\n\r\n');
   },
 
+  _transform: function(data, _, cb) {
+    // not write null chunks because they signal about end of stream
+    if (data.length) {
+      return this._writeChunk(data, cb);
+    }
+    return cb();
+  },
+
+  // TODO: legacy, remove from next version
   _write: function(data, enc, cb) {
     if (cb == null) {
       if (data) {
@@ -217,35 +231,21 @@ assign(ICAPResponse.prototype, Response.prototype, {
       }
       return;
     }
-    // not write null chunks because they signal about end of stream
-    if (data.length) {
-      this._writeChunk(data, enc, cb);
-    }
+    return Transform.prototype._write.call(this, data, enc, cb);
   },
 
   send: function(data) {
     this.sendData = data;
   },
 
-  end: function(chunk, encoding, callback) {
-    if (this.done) {
-      // drop the chunk;
-      if (callback) {
-        callback();
-      }
-      return;
-    }
-    this.done = true;
-    if (chunk) {
-      this.write(chunk, enc);
-    }
+  _flush: function(cb) {
     if (this.hasBody) {
       if (this.sendData) {
         this.write(this.sendData);
         this.sendData = null;
       }
-      this._streamIsOver();
+      return this._streamIsOver();
     }
-    Writable.prototype.end.call(this, callback);
+    return cb();
   }
 });

@@ -66,7 +66,7 @@ assign(ICAPRequest.prototype, Request.prototype, {
   },
   getPreviewMime: function(cb) {
     if (!this.preview) {
-      return cb(null, null);;
+      return cb(null, null);
     }
     if (magic != null) {
       return magic.detect(this.preview, cb);

@@ -52,17 +52,17 @@ module.exports = function(server) {
 
   // HANDLE RESPMOD
   server.response('*', function(icapReq, icapRes, req, res, next) {
-    // handle previews before doing anything else: icapReq.preview is buffer of preview data
-    if (icapReq.hasPreview()) {
-      icapRes.continuePreview();
-      return;
-    }
     icapRes.setIcapStatusCode(200);
     icapRes.setIcapHeaders(icapReq.headers);
     icapRes.setHttpStatus(res);
     icapRes.setHttpHeaders(res.headers);
     icapRes.writeHeaders(icapReq.hasBody());
     icapReq.pipe(icapRes);
+    // handle previews before doing anything else: icapReq.preview is buffer of preview data
+    if (icapReq.hasBody() && !icapReq.ieof) {
+      icapRes.continuePreview();
+      return;
+    }
   });
 
   // HANDLE ERRORS

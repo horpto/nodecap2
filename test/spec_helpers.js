@@ -33,7 +33,6 @@ var testIO = function(testName, sampleName, configureFn, configureInput) {
       if (result) {
         console.log(result);
       }
-      t.end();
     };
 
     // run the test-specific server configuration before starting server & test
@@ -56,7 +55,7 @@ var testIO = function(testName, sampleName, configureFn, configureInput) {
         console.log('client end');
       });
       client.on('error', function(err) {
-        console.error(err);
+        console.error("CLIENT ERROR", err);
         if (err.stack) {
           console.error(err.stack);
         }
@@ -64,15 +63,13 @@ var testIO = function(testName, sampleName, configureFn, configureInput) {
 
       setTimeout(function() {
         client.end();
-        // console.log(output);
-        // console.log(buffer);
         buffer = buffer.replace(datePattern, dateReplace).replace(istagPattern, istagReplace);
         output = output.replace(datePattern, dateReplace).replace(istagPattern, istagReplace);
+        //console.error("BUFFER:", buffer);
+        //console.error("OUTPUT:", output);
         t.equal(buffer, output, 'should have expected icap responses');
         server.close(function() {
-          if (!configureFn) {
-            t.end();
-          }
+          t.end();
         });
       }, 1000);
     });

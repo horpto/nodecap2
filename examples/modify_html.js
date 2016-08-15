@@ -103,7 +103,7 @@ server.response('*', function(icapReq, icapRes, req, res, next) {
 
   // the only immediate action is to request the full response body
   icapReq.pipe(icapRes);
-  if (icapReq.hasPreviewBody() && !icapReq.ieof) {
+  if (icapReq.hasBody() && !icapReq.ieof) {
     icapRes.continuePreview();
   }
   // explicitly do not go to next
