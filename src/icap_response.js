@@ -70,12 +70,12 @@ assign(ICAPResponse.prototype, Response.prototype, {
   hasFilter: function() {
     return typeof this.filter === 'function';
   },
-  setFilter: function(isBuffer, filterFn) {
-    if (typeof isBuffer === 'function') {
-      filterFn = isBuffer;
-      isBuffer = false;
+  setFilter: function(callAtEnd, filterFn) {
+    if (typeof callAtEnd === 'function') {
+      filterFn = callAtEnd;
+      callAtEnd = false;
     }
-    this.buffer = isBuffer ? new Buffer(0) : null;
+    this.buffer = callAtEnd ? new Buffer(0) : null;
     this.filter = filterFn;
   },
   _joinHeaders: function (status, headers) {

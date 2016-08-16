@@ -52,23 +52,14 @@ var acceptRequest = function(icapReq, icapRes, req, res) {
     icapRes.setHttpHeaders(res.headers);
   }
   var hasBody = icapReq.hasBody();
-  if (hasbody) {
+  if (hasbody && !icapReq.ieof) {
     icapRes.continuePreview();
   }
   icapRes.writeHeaders(hasBody);
+  // .pipe() or .end() must be called.
   icapReq.pipe(icapRes);
 };
 
-//  filter method
-var filterHtml = function(data) {
-  var str = data.toString();
-  // parse dom from str, modify, convert back to string
-  // pseudocode:
-  //  var dom = parseHtml(str);
-  //  dom.modify();
-  //  str = dom.toString();
-  return str;
-}
 
 //  filter html responses
 server.response('*', function(icapReq, icapRes, req, res, next) {
@@ -87,8 +78,10 @@ server.response('*', function(icapReq, icapRes, req, res, next) {
     return next();
   }
 
+  // `filter` function should be a synchronous, but you can use streams now
   // configure a filter that will run only after the full response data is received
   icapRes.setFilter(true, function(buffer) {
+    // buffer are always Buffer instance
     var str = buffer.toString('utf8');
 
     icapRes.setIcapStatusCode(200);
@@ -102,7 +95,7 @@ server.response('*', function(icapReq, icapRes, req, res, next) {
   });
 
   // the only immediate action is to request the full response body
-  icapReq.pipe(icapRes);
+  icapReq.pipe(icapRes); // or may be icapReq.pipe(zlib.createUnzip().pipe(icapRes));
   if (icapReq.hasBody() && !icapReq.ieof) {
     icapRes.continuePreview();
   }

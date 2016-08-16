@@ -7,6 +7,9 @@ It is fork of [nodecap](https://www.npmjs.com/package/nodecap) with some fixes a
 
 ICAP server framework for node.js - create custom HTTP proxy filters for Squid, etc. **nodecap** implements the [ICAP protocol](http://www.icap-forum.org/documents/specification/rfc3507.txt).
 
+**WARN** : version 2.2.0 has a bit different behaviour as previous version, so check github repo and your server before upgrading. It's last version that may work with node v0.10.
+
+
 ## Use Case
 [Squid](http://www.squid-cache.org/) and other HTTP proxy servers typically provide only basic levels of filtering. **nodecap** implements the ICAP protocol, allowing for dynamic, per-request filtering and modification of requests and responses.
 

@@ -102,6 +102,7 @@ var rejectRequest = function(icapReq, icapRes, req, res) {
   icapRes.setHttpHeaders(headers);
   if (hasBody) {
     icapRes.writeHeaders(true);
+    // only one calling at once.
     icapRes.send(errorPage);
   } else {
     icapRes.writeHeaders(false);
