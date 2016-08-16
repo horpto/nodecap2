@@ -61,7 +61,7 @@ function ICAPServer(options) {
         // can't do anything
       }
     } finally {
-      this.logger.error('%s ERROR - %s - %s', this.id, (icapRes.icapStatus || [null,null,null]).join(' '), err.stack || 'Unknown Error');
+      this.logger.error('%s ERROR - httpmethod: %s - err: %s', this.id, (icapRes.httpMethod || []).join(' '), err.stack || err.message || 'Unknown Error');
     }
   }, this);
 
@@ -85,7 +85,7 @@ function ICAPServer(options) {
       cbs = this._optionsCallbacks;
       pathname = icapReq.parsedUri.pathname;
       next();
-      this.logger.info('%s OPTIONS - %s %s', this.id, (icapRes.icapStatus || [null,null,null]).join(' '), (icapRes.httpMethod || [null,null,null]).join(' '));
+      this.logger.info('%s OPTIONS - %s - %s', this.id, (icapRes.icapStatus || []).join(' '), (icapRes.httpMethod || []).join(' '));
     } catch (e) {
       this.emit('error', e, icapReq, icapRes);
     }
@@ -111,7 +111,7 @@ function ICAPServer(options) {
       cbs = this._requestCallbacks;
       host = req.parsedUri.hostname;
       next();
-      this.logger.info('%s REQMOD - %s - %s %s - %s', this.id, (icapRes.icapStatus || [null,null,null]).join(' '), req.method, req.parsedUri.protocol + '//' + req.parsedUri.host + req.parsedUri.pathname, (icapRes.httpMethod || [null,null,null]).join(' '));
+      this.logger.info('%s REQMOD - %s - %s - %s', this.id, (icapRes.icapStatus || []).join(' '), req.line, (icapRes.httpMethod || []).join(' '));
     } catch (e) {
       this.emit('error', e, icapReq, icapRes);
     }
@@ -137,7 +137,7 @@ function ICAPServer(options) {
       cbs = this._responseCallbacks;
       host = req.parsedUri.hostname;
       next();
-      this.logger.info('%s RESPMOD - %s - %s %s - %s', this.id, (icapRes.icapStatus || [null,null,null]).join(' '), req.method, req.parsedUri.protocol + '//' + req.parsedUri.host + req.parsedUri.pathname, (icapRes.httpMethod || [null,null,null]).join(' '));
+      this.logger.info('%s RESPMOD - %s - %s - %s', this.id, (icapRes.icapStatus || []).join(' '), req.line, (icapRes.httpMethod || []).join(' '));
     } catch (e) {
       this.emit('error', e, icapReq, icapRes);
     }

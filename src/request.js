@@ -6,6 +6,7 @@ var assign = require('./utils').assign;
 var Request = module.exports = function() {
   this.headers = null;
   this.method = '';
+  this.line = ''; // line that parsed to method, uri etc
   this.uri = null;
   this.version = null;
   this.parsedUri = null;

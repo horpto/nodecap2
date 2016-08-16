@@ -23,12 +23,17 @@ var ICAPRequest = module.exports = function(id) {
   this.isPrevVersionProto = false;
   this.preview = null;
   this.ieof = false;
+  this.done = false;
 };
 util.inherits(ICAPRequest, EventEmitter);
 
 assign(ICAPRequest.prototype, Request.prototype, {
   push: function(data) {
     if (!this.stream) {
+      // icapReq now are closed;
+      if (data == null) {
+        this.done = true;
+      }
       return;
     }
     if (this.isPrevVersionProto) {
@@ -42,6 +47,10 @@ assign(ICAPRequest.prototype, Request.prototype, {
   pipe: function(stream) {
     this.stream = stream;
     this.isPrevVersionProto = stream.write == null;
+    // icapReq are closed already thus we'are closing stream.
+    if (this.done) {
+      this.push(null);
+    }
   },
   hasPreview: function() {
     return this.headers && 'Preview' in this.headers;
