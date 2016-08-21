@@ -18,11 +18,13 @@
     "mmmagic": "^0.4.0"
   },
   "devDependencies": {
+    "eslint": "^3.3.1",
     "tap": "^6.3.2"
   },
   "scripts": {
     "tap": "tap",
-    "test": "tap ./test/*_spec.js"
+    "test": "tap ./test/*_spec.js",
+    "eslint": "eslint src/"
   },
   "repository": {
     "type": "git",

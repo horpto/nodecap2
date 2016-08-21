@@ -6,8 +6,8 @@ var path = require('path');
 // http://jsperf.com/string-reverse-methods-performance
 // lame_reverse:
 var reverse = function (s) {
-    for (var i = s.length, o = ''; i--; o += s[i]);
-    return o;
+  for (var i = s.length, o = ''; i--; o += s[i]);
+  return o;
 };
 
 // For a sorted list, binary search:
@@ -24,13 +24,11 @@ var binaryIndexNear = function(arr, searchElement) {
     currentElement = arr[currentIndex];
 
     if (currentElement < searchElement) {
-        minIndex = currentIndex + 1;
-    }
-    else if (currentElement > searchElement) {
-        maxIndex = currentIndex - 1;
-    }
-    else {
-        return (currentIndex + 1);
+      minIndex = currentIndex + 1;
+    } else if (currentElement > searchElement) {
+      maxIndex = currentIndex - 1;
+    } else {
+      return (currentIndex + 1);
     }
   }
   return -(maxIndex <= 0 ? 1 : (maxIndex + 1));

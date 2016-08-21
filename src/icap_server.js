@@ -31,7 +31,7 @@ function ICAPServer(options) {
   }, options || {});
 
   this.server = net.createServer(function(stream) {
-    var handler = new ICAPHandler(stream, this, options);
+    new ICAPHandler(stream, this, options);
   }.bind(this));
   this.protocolVersion = 'ICAP/1.0';
   this.systemVersion = 'Node/1';
@@ -98,7 +98,7 @@ function ICAPServer(options) {
         return;
       }
       if (!fn[0] || fn[0].contains(host)) {
-        fn[1].call(this, icapReq, icapRes, req, res, next);
+        fn[1].call(self, icapReq, icapRes, req, res, next);
       } else {
         next();
       }
@@ -163,7 +163,7 @@ ICAPServer.prototype = Object.assign({}, EventEmitter.prototype, {
 
   error: function(cb) {
     if (typeof cb != 'function') {
-        throw new TypeError("expected function, not " + typeof cb);
+      throw new TypeError("expected function, not " + typeof cb);
     }
     this._errorCallbacks.push(cb);
   },
@@ -175,7 +175,7 @@ ICAPServer.prototype = Object.assign({}, EventEmitter.prototype, {
       path = new RegExp('^' + path + '$');
     }
     if (typeof cb != "function") {
-        throw new TypeError("expected function, not " + typeof cb);
+      throw new TypeError("expected function, not " + typeof cb);
     }
     this._optionsCallbacks.push([path, cb]);
   },
@@ -191,7 +191,7 @@ ICAPServer.prototype = Object.assign({}, EventEmitter.prototype, {
       domainList.add(domain);
     }
     if (typeof cb != "function") {
-        throw new TypeError("expected function, not " + typeof cb);
+      throw new TypeError("expected function, not " + typeof cb);
     }
     this._requestCallbacks.push([domainList, cb]);
   },
@@ -207,7 +207,7 @@ ICAPServer.prototype = Object.assign({}, EventEmitter.prototype, {
       domainList.add(domain);
     }
     if (typeof cb != "function") {
-        throw new TypeError("expected function, not " + typeof cb);
+      throw new TypeError("expected function, not " + typeof cb);
     }
     this._responseCallbacks.push([domainList, cb]);
   }

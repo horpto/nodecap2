@@ -2,7 +2,7 @@
 
 var util = require('util');
 var EventEmitter = require('eventemitter3');
-var Request = require('./request');s
+var Request = require('./request');
 
 var magic = null;
 

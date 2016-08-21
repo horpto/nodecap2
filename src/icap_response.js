@@ -128,17 +128,17 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
     }
     // http status/headers
     var headerBlock = '';
-    if (!!this.httpMethodType) {
+    if (this.httpMethodType) {
       headerBlock = this._joinHeaders(this.httpMethod, this.httpHeaders) + crlf;
       this._setEncapsulatedHeader(hasBody, headerBlock);
     }
     // icap status/headers
-    this._checkDefaultIcapHeaders()
+    this._checkDefaultIcapHeaders();
     var icapBlock = this._joinHeaders(this.icapStatus, this.icapHeaders);
     this.push(icapBlock + crlf + headerBlock);
   },
 
-  allowUnchanged: function(icapResponse) {
+  allowUnchanged: function() {
     // user should check status 204 is allowed own
     this.setIcapStatusCode(204);
     this.writeHeaders(false);

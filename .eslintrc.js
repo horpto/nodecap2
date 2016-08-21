@@ -1,0 +1,28 @@
+module.exports = {
+    "env": {
+        "es6": true,
+        "node": true
+    },
+    "extends": "eslint:recommended",
+    "rules": {
+        "no-console": "off",
+        "indent": [
+            "error",
+            2
+        ],
+        // TODO: increase to error level
+        "linebreak-style": [
+            "off",
+            "unix"
+        ],
+        // TODO: increase to error level
+        "quotes": [
+            "off",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ]
+    }
+};

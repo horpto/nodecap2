@@ -1,13 +1,11 @@
 "use strict";
 
-var net = require('net');
 var ICAPError = require('./icap_error');
 var ICAPRequest = require('./icap_request');
 var ICAPResponse = require('./icap_response');
 var HTTPRequest = require('./http_request');
 var HTTPResponse = require('./http_response');
 var helpers = require('./helpers');
-var codes = require('./codes');
 
 var states = {
   'icapmethod': 'icapmethod',
@@ -161,38 +159,38 @@ ICAPHandler.prototype = {
     }
     encapsulatedEntity = this.icapRequest.encapsulated.shift();
     switch (encapsulatedEntity[0]) {
-      case 'req-hdr':
-        if (!this.icapRequest.encapsulated.length) {
-          throw new ICAPError('No body offset for req-hdr');
-        }
-        this.nextState(states.requestheader, this.icapRequest.encapsulated[0][1]);
+    case 'req-hdr':
+      if (!this.icapRequest.encapsulated.length) {
+        throw new ICAPError('No body offset for req-hdr');
+      }
+      this.nextState(states.requestheader, this.icapRequest.encapsulated[0][1]);
+      break;
+    case 'res-hdr':
+      if (!this.icapRequest.encapsulated.length) {
+        throw new ICAPError('No body offset for res-hdr');
+      }
+      this.nextState(states.responseheader, this.icapRequest.encapsulated[0][1]);
+      break;
+    case 'req-body':
+    case 'res-body':
+      if (this.parsePreview) {
+        this.icapRequest.encapsulated.unshift(encapsulatedEntity);
+        this.nextState(states.parsepreview);
         break;
-      case 'res-hdr':
-        if (!this.icapRequest.encapsulated.length) {
-          throw new ICAPError('No body offset for res-hdr');
-        }
-        this.nextState(states.responseheader, this.icapRequest.encapsulated[0][1]);
-        break;
-      case 'req-body':
-      case 'res-body':
-        if (this.parsePreview) {
-          this.icapRequest.encapsulated.unshift(encapsulatedEntity);
-          this.nextState(states.parsepreview);
-          break;
-        }
+      }
 
-        this.emitEvent(this.icapRequest.isReqMod() ? 'httpRequestBody' : 'httpResponseBody');
-        this.nextState(states.parsebody, 0);
-        break;
-      case 'null-body':
-        this.emitEvent(this.icapRequest.isReqMod() ? 'httpRequestNullBody' : 'httpResponseNullBody');
-        this.logger.debug('[%s] null-body]', this.id);
-        this.icapRequest.push(null);
-        this.resetState();
-        this.nextState();
-        break;
-      default:
-        throw new ICAPError('Unsupported encapsulated entity: ' + encapsulatedEntity);
+      this.emitEvent(this.icapRequest.isReqMod() ? 'httpRequestBody' : 'httpResponseBody');
+      this.nextState(states.parsebody, 0);
+      break;
+    case 'null-body':
+      this.emitEvent(this.icapRequest.isReqMod() ? 'httpRequestNullBody' : 'httpResponseNullBody');
+      this.logger.debug('[%s] null-body]', this.id);
+      this.icapRequest.push(null);
+      this.resetState();
+      this.nextState();
+      break;
+    default:
+      throw new ICAPError('Unsupported encapsulated entity: ' + encapsulatedEntity);
     }
   },
 
@@ -288,26 +286,26 @@ ICAPHandler.prototype = {
     this.icapBodyStartIndex = this.bufferIndex;
 
     switch (this.icapRequest.method) {
-      case 'OPTIONS':
-        this.emitEvent('icapOptions');
-        this.resetState();
-        this.nextState();
-        break;
+    case 'OPTIONS':
+      this.emitEvent('icapOptions');
+      this.resetState();
+      this.nextState();
+      break;
 
-      case 'RESPMOD':
-      case 'REQMOD':
-        this.icapRequest.encapsulated = helpers.encapsulated(this.icapRequest.headers['Encapsulated']);
-        if (!this.icapRequest.encapsulated || !this.icapRequest.encapsulated.length) {
-          throw new ICAPError('Missing Encapsulated header for: ' + this.icapRequest.method);
-        }
-        if (this.icapRequest.hasPreviewBody()) {
-          this.parsePreview = true;
-        }
-        this.nextStateEncapsulated();
-        break;
+    case 'RESPMOD':
+    case 'REQMOD':
+      this.icapRequest.encapsulated = helpers.encapsulated(this.icapRequest.headers['Encapsulated']);
+      if (!this.icapRequest.encapsulated || !this.icapRequest.encapsulated.length) {
+        throw new ICAPError('Missing Encapsulated header for: ' + this.icapRequest.method);
+      }
+      if (this.icapRequest.hasPreviewBody()) {
+        this.parsePreview = true;
+      }
+      this.nextStateEncapsulated();
+      break;
 
-      default:
-        throw new ICAPError(405);
+    default:
+      throw new ICAPError(405);
     }
   },
 

@@ -60,18 +60,19 @@ var readHeader = function(buf, start, len) {
 // if uri contains 443 port so it's should be https, not http.
 // it's dumb way but suitable for most cases.
 var parseUrlOrAddress = function parseUrlOrAddress(uri) {
+  var prot;
   var parsed = url.parse(uri, false);
   if (!parsed.slashes) {
-    var prot = uri.indexOf(':443') > -1 ? "https://" : "http://";
+    prot = uri.indexOf(':443') > -1 ? "https://" : "http://";
     parsed = url.parse(prot + uri, false);
   } else if (!parsed.protocol) {
-    var prot = uri.indexOf(':443') > -1 ? "https:" : "http:";
+    prot = uri.indexOf(':443') > -1 ? "https:" : "http:";
     parsed = url.parse(prot + uri, false);
   }
 
   parsed.query = querystring.parse(parsed.query);
   return parsed;
-}
+};
 
 //  read from start/0 up to the next newline and parse as a HTTP/ICAP method line.
 //  returns null if not valid method line or:
