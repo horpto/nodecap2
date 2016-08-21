@@ -1,4 +1,4 @@
-var helpers = require('./spec_helpers');
+const helpers = require('./spec_helpers');
 
 helpers.testIO('should call error handlers for bad requests', 'error_check', function(t, server, cb) {
   server.request('*', function(icapReq, icapRes, req, res, next) {

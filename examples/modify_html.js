@@ -1,7 +1,7 @@
-var ICAPServer = require('../').ICAPServer;
+const ICAPServer = require('../').ICAPServer;
 
 //  run the server
-var server = new ICAPServer({
+const server = new ICAPServer({
   debug: false
 });
 console.log('Starting ICAP server...');
@@ -37,7 +37,7 @@ server.options('*', function(icapReq, icapRes, next) {
 
 
 //  helper to accept a request/response
-var acceptRequest = function(icapReq, icapRes, req, res) {
+const acceptRequest = function(icapReq, icapRes, req, res) {
   if (!icapRes.hasFilter() && icapReq.hasPreview()) {
     icapRes.allowUnchanged();
     return;
@@ -51,7 +51,7 @@ var acceptRequest = function(icapReq, icapRes, req, res) {
     icapRes.setHttpStatus(res.code); // or icapRes.setHttpStatus(res);
     icapRes.setHttpHeaders(res.headers);
   }
-  var hasBody = icapReq.hasBody();
+  const hasBody = icapReq.hasBody();
   if (hasBody && !icapReq.ieof) {
     icapRes.continuePreview();
   }
@@ -82,7 +82,7 @@ server.response('*', function(icapReq, icapRes, req, res, next) {
   // configure a filter that will run only after the full response data is received
   icapRes.setFilter(true, function(buffer) {
     // buffer are always Buffer instance
-    var str = buffer.toString('utf8');
+    const str = buffer.toString('utf8');
 
     icapRes.setIcapStatusCode(200);
     icapRes.setIcapHeaders(icapReq.headers);

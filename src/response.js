@@ -1,7 +1,7 @@
 "use strict";
 
 // use as mixin, not classical inheritance
-var Response = module.exports = function(protocol) {
+const Response = module.exports = function(protocol) {
   this.headers = {};
   this.protocol = protocol || "";
   this.version = '';

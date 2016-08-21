@@ -27,6 +27,10 @@ module.exports = {
         "semi": [
             "error",
             "always"
-        ]
+        ],
+
+        /* ES6 FEATURES */
+        "no-var": "error"
+
     }
 };

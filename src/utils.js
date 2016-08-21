@@ -1,6 +1,6 @@
 "use strict";
 
-var _id = 0;
+let _id = 0;
 function uniqueId() {
   _id ++;
   return '' + _id;

@@ -1,8 +1,8 @@
-var helpers = require('./spec_helpers');
-var DomainList = require('..').DomainList;
+const helpers = require('./spec_helpers');
+const DomainList = require('..').DomainList;
 
 helpers.testIO('server should allow whitelist and block unlisted domains', 'whitelist', function(t, server, cb) {
-  var domains = new DomainList();
+  const domains = new DomainList();
   domains.add('allowed.com');
 
   // handle whitelisted domains normally

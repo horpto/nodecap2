@@ -1,7 +1,7 @@
 "use strict";
 
 // use as mixin, not classical inheritance
-var Request = module.exports = function() {
+const Request = module.exports = function() {
   this.headers = null;
   this.method = '';
   this.line = ''; // line that parsed to method, uri etc

@@ -1,15 +1,15 @@
-var ICAPServer = require('../').ICAPServer;
-var DomainList = require('../').DomainList;
+const ICAPServer = require('../').ICAPServer;
+const DomainList = require('../').DomainList;
 
 //  whitelist of allowed sites
-var whitelist = new DomainList();
+const whitelist = new DomainList();
 whitelist.addMany([
   'whitelisted.example.com', // match fixed domain
   '.whitelisted.example.net' // match fixed domain and all subdomains
 ]);
 
 //  run the server
-var server = new ICAPServer({
+const server = new ICAPServer({
   debug: false
 });
 console.log('Starting ICAP server...');
@@ -59,7 +59,7 @@ server.options('*', function(icapReq, icapRes, next) {
 
 
 //  helper to accept a request/response
-var acceptRequest = function(icapReq, icapRes, req, res) {
+const acceptRequest = function(icapReq, icapRes, req, res) {
   if (!icapRes.hasFilter() && icapReq.hasPreview()) {
     icapRes.allowUnchanged();
     return;
@@ -79,7 +79,7 @@ var acceptRequest = function(icapReq, icapRes, req, res) {
     icapRes.setHttpStatus(res.code);
     icapRes.setHttpHeaders(res.headers);
   }
-  var hasBody = icapReq.hasBody();
+  const hasBody = icapReq.hasBody();
   if (hasBody) {
     icapRes.continuePreview();
   }
@@ -87,11 +87,12 @@ var acceptRequest = function(icapReq, icapRes, req, res) {
   icapReq.pipe(icapRes);
 };
 
-var errorPage = "page blocked";
+const errorPage = "page blocked";
 
 //  helper to reject a request/response
-var rejectRequest = function(icapReq, icapRes, req, res) {
-  var hasBody = false, headers = {};
+const rejectRequest = function(icapReq, icapRes, req, res) {
+  let hasBody = false;
+  const headers = {};
   // do *not* set Content-Length: causes an issue with Squid
   if (req.headers && 'Accept' in req.headers && req.headers['Accept'].indexOf('text') >= 0) {
     hasBody = true;

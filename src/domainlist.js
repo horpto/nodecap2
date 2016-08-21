@@ -1,11 +1,13 @@
 "use strict";
 
-var fs = require('fs');
-var path = require('path');
+/*eslint no-var: "off"*/
+
+const fs = require('fs');
+const path = require('path');
 
 // http://jsperf.com/string-reverse-methods-performance
 // lame_reverse:
-var reverse = function (s) {
+const reverse = function (s) {
   for (var i = s.length, o = ''; i--; o += s[i]);
   return o;
 };
@@ -13,7 +15,7 @@ var reverse = function (s) {
 // For a sorted list, binary search:
 // Find the index + 1 of the exact matching element
 // or negative (index + 1) preceding element.
-var binaryIndexNear = function(arr, searchElement) {
+const binaryIndexNear = function(arr, searchElement) {
   var minIndex = 0;
   var maxIndex = arr.length - 1;
   var currentIndex = 0;
@@ -34,11 +36,11 @@ var binaryIndexNear = function(arr, searchElement) {
   return -(maxIndex <= 0 ? 1 : (maxIndex + 1));
 };
 
-var wildcardStartChar = '\0';
-var wildcardEndChar = '\xFF';
-var wildcardEndChars = [wildcardStartChar, wildcardEndChar];
+const wildcardStartChar = '\0';
+const wildcardEndChar = '\xFF';
+const wildcardEndChars = [wildcardStartChar, wildcardEndChar];
 
-var DomainList = module.exports = function(domainList) {
+const DomainList = module.exports = function(domainList) {
   domainList = domainList || [];
   this.matchDomains = [];
   this.domainExpiry = {};
@@ -104,16 +106,15 @@ DomainList.prototype = {
   },
 
   add: function(domain, ttl, skipSort) {
-    var expireDomain, rev, revExpire;
     domain = (domain || '').trim();
     if (!domain) {
       return;
     }
-    rev = reverse(domain);
-
+    const rev = reverse(domain);
+    let expireDomain;
     if (domain[0] === '.') {
       expireDomain = domain.slice(1);
-      revExpire = reverse(expireDomain);
+      let revExpire = reverse(expireDomain);
 
       if (binaryIndexNear(this.matchDomains, revExpire) < 0) {
         this.matchDomains.push(revExpire);
@@ -139,12 +140,11 @@ DomainList.prototype = {
   },
 
   remove: function(domain) {
-    var fixed, wildcard;
-    var toRemove = [];
     domain = (domain || '').trim();
     if (!domain) {
       return;
     }
+    let fixed, wildcard;
     if (domain[0] === '.') {
       fixed = domain.slice(1);
       wildcard = domain;
@@ -152,9 +152,11 @@ DomainList.prototype = {
       fixed = domain;
       wildcard = '.' + domain;
     }
-    toRemove.push(reverse(fixed));
-    toRemove.push(reverse(wildcardStartChar + wildcard));
-    toRemove.push(reverse(wildcardEndChar + wildcard));
+    const toRemove = [
+      reverse(fixed),
+      reverse(wildcardStartChar + wildcard),
+      reverse(wildcardEndChar + wildcard)
+    ];
     this.matchDomains = this.matchDomains.filter(function(existingDomain) {
       return toRemove.indexOf(existingDomain) < 0;
     });
@@ -162,7 +164,7 @@ DomainList.prototype = {
   },
 
   toArray: function() {
-    var domains = [];
+    const domains = [];
     this.matchDomains.forEach(function(domain) {
       if (domain[domain.length - 1] === wildcardStartChar) {
         domains.push(reverse(domain.slice(0,-1)));
@@ -183,11 +185,11 @@ DomainList.prototype = {
  */
 DomainList.fromFile = function(domainFile, domainList) {
   domainList = domainList || new DomainList();
-  var domainText = fs.readFileSync(path.resolve(process.cwd(), domainFile), 'utf8').trim();
+  const domainText = fs.readFileSync(path.resolve(process.cwd(), domainFile), 'utf8').trim();
   if (!domainText) {
     return null;
   }
-  var domains = domainText.split('\n');
+  const domains = domainText.split('\n');
   domainList.addMany(domains);
   return domainList;
 };

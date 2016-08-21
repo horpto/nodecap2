@@ -1,19 +1,19 @@
 "use strict";
 
-var util = require('util');
-var EventEmitter = require('eventemitter3');
-var Request = require('./request');
+const util = require('util');
+const EventEmitter = require('eventemitter3');
+const Request = require('./request');
 
-var magic = null;
+let magic = null;
 
 try {
-  var mmm = require('mmmagic');
+  const mmm = require('mmmagic');
   magic = new mmm.Magic(mmm.MAGIC_MIME_TYPE);
 } catch (err) {
   console.warn('Can not import mmmagic');
 }
 
-var ICAPRequest = module.exports = function(id) {
+const ICAPRequest = module.exports = function(id) {
   Request.call(this);
   EventEmitter.call(this);
 

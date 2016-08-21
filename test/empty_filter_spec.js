@@ -1,4 +1,4 @@
-var helpers = require('./spec_helpers');
+const helpers = require('./spec_helpers');
 
 helpers.testIO('should ignore empty result from fullpage filter', 'empty_filter', function(t, server, cb) {
   // handle whitelisted domains normally

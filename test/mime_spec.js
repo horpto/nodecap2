@@ -1,4 +1,4 @@
-var helpers = require('./spec_helpers');
+const helpers = require('./spec_helpers');
 
 helpers.testIO('ICAPRequest should get mime type of preview', 'mime', function(t, server, cb) {
   server.response('*', function(icapReq, icapRes, req, res, next) {

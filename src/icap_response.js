@@ -1,15 +1,15 @@
 "use strict";
 
-var util = require('util');
-var Transform = require('stream').Transform;
-var Response = require('./response');
-var codes = require('./codes');
-var currentISTag = "NODECAP-" + (new Date()).getTime();
+const util = require('util');
+const Transform = require('stream').Transform;
+const Response = require('./response');
+const codes = require('./codes');
+const currentISTag = "NODECAP-" + (new Date()).getTime();
 
-var crlf = '\r\n';
-var DEFAULT_CHUNK_SIZE = 4096;
+const crlf = '\r\n';
+const DEFAULT_CHUNK_SIZE = 4096;
 
-var ICAPResponse = module.exports = function(id, stream, options) {
+const ICAPResponse = module.exports = function(id, stream, options) {
   Response.call(this, 'ICAP');
 
   options = Object.assign(options || {}, {
@@ -77,12 +77,12 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
     this.filter = filterFn;
   },
   _joinHeaders: function (status, headers) {
-    var block = status.join(' ') + crlf;
-    for (var key in headers) {
-      var value = headers[key];
+    let block = status.join(' ') + crlf;
+    for (let key in headers) {
+      const value = headers[key];
       key += ": ";
       if (Array.isArray(value)) {
-        for (var i = 0, l=value.length; i < l; ++i) {
+        for (let i = 0, l=value.length; i < l; ++i) {
           block += key + value[i] + crlf;
         }
       } else {
@@ -92,8 +92,8 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
     return block;
   },
   _setEncapsulatedHeader: function(hasBody, headerBlock) {
-    var encapsulated = [];
-    var bodyType = "null-body";
+    const encapsulated = [];
+    let bodyType = "null-body";
     if (this.httpMethodType === 'request') {
       encapsulated.push('req-hdr=0');
       if (hasBody) {
@@ -127,14 +127,14 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
       this.setIcapStatusCode();
     }
     // http status/headers
-    var headerBlock = '';
+    let headerBlock = '';
     if (this.httpMethodType) {
       headerBlock = this._joinHeaders(this.httpMethod, this.httpHeaders) + crlf;
       this._setEncapsulatedHeader(hasBody, headerBlock);
     }
     // icap status/headers
     this._checkDefaultIcapHeaders();
-    var icapBlock = this._joinHeaders(this.icapStatus, this.icapHeaders);
+    const icapBlock = this._joinHeaders(this.icapStatus, this.icapHeaders);
     this.push(icapBlock + crlf + headerBlock);
   },
 
@@ -146,7 +146,7 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
   },
 
   continuePreview: function() {
-    var code = this._getCode(100);
+    const code = this._getCode(100);
     this.push(code.join(' ') + crlf + crlf);
   },
 
@@ -168,8 +168,8 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
 
   // TODO: more async
   _divideIntoHandyChunks: function(data, cb) {
-    var size = this.chunkSize;
-    var tmp = data.slice(0, size);
+    let size = this.chunkSize;
+    let tmp = data.slice(0, size);
     data = data.slice(size);
     while (tmp.length) {
       this._writeHandyChunk(tmp);
@@ -196,7 +196,7 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
   // can return data to write it before the stream is ended
   _streamIsOver: function() {
     if (this.filter && this.buffer) {
-      var data = this.filter(this.buffer);
+      const data = this.filter(this.buffer);
       this.filter = null;
       this.buffer = null;
       if (data) {

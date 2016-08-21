@@ -1,9 +1,9 @@
 "use strict";
 
-var util = require('util');
-var Response = require('./response');
+const util = require('util');
+const Response = require('./response');
 
-var HTTPResponse = module.exports = function() {
+const HTTPResponse = module.exports = function() {
   Response.call(this, 'HTTP');
 };
 util.inherits(HTTPResponse, Response);

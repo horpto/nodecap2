@@ -1,8 +1,8 @@
-var helpers = require('./spec_helpers');
+const helpers = require('./spec_helpers');
 
-var replaceWords = function(icap, pattern, value) {
+const replaceWords = function(icap, pattern, value) {
   icap.uri = icap.uri.replace(pattern, value);
-  for (var key in icap.headers) {
+  for (const key in icap.headers) {
     if (!icap.headers.hasOwnProperty(key) || !icap.headers[key]) {
       continue;
     }
@@ -14,7 +14,7 @@ helpers.testIO('should replace "posting" with "-------" via buffer', 'buffer', f
   // handle whitelisted domains normally
   server.request('*', function(icapReq, icapRes, req) {
     replaceWords(req, /posting/g, function(match) {
-      var str = '', ix = match.length;
+      let str = '', ix = match.length;
       while (ix--) {
         str += '-';
       }
@@ -27,7 +27,7 @@ helpers.testIO('should replace "posting" with "-------" via buffer', 'buffer', f
     icapRes.setHttpHeaders(req.headers);
     icapRes.writeHeaders(icapReq.hasBody());
     icapRes.setFilter(true, function(data) {
-      var str = data.toString();
+      const str = data.toString();
       if (/posting/.test(str)) {
         return str.replace(/posting/g, '-------');
       }

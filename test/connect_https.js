@@ -1,4 +1,4 @@
-var helpers = require('./spec_helpers');
+const helpers = require('./spec_helpers');
 
 helpers.testIO('HTTPRequest should replace', 'connect', function(test, server, cb) {
   // handle whitelisted domains normally

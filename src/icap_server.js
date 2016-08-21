@@ -1,14 +1,13 @@
 "use strict";
 
-var net = require('net');
-var util = require('util');
-var winston = require('winston');
-var EventEmitter = require('eventemitter3');
-var ICAPHandler = require('./icap_handler');
-var DomainList = require('./domainlist');
+const net = require('net');
+const util = require('util');
+const winston = require('winston');
+const EventEmitter = require('eventemitter3');
+const ICAPHandler = require('./icap_handler');
+const DomainList = require('./domainlist');
 
-var _utils = require('./utils');
-var noop = _utils.noop;
+const noop = require('./utils').noop;
 
 /*
  *  ICAPServer
@@ -40,17 +39,17 @@ function ICAPServer(options) {
   this._errorCallbacks = [];
   this.on('error', function(err, icapReq, icapRes) {
     function next() {
-      var fn = cbs[ix++];
+      const fn = cbs[ix++];
       if (!fn || icapRes.done) {
         return;
       }
       fn.call(self, err, icapReq, icapRes, next);
     }
 
-    var ix, cbs, self = this;
+    let ix = 0;
+    const cbs = this._errorCallbacks, self = this;
     try {
       ix = 0;
-      cbs = this._errorCallbacks;
       next();
     } catch (e) {
       try {
@@ -67,7 +66,7 @@ function ICAPServer(options) {
   this._optionsCallbacks = [];
   this.on('icapOptions', function(icapReq, icapRes) {
     function next() {
-      var fn = cbs[ix++];
+      const fn = cbs[ix++];
       if (!fn || icapRes.done) {
         return;
       }
@@ -78,10 +77,9 @@ function ICAPServer(options) {
       }
     }
 
-    var ix, cbs, pathname, self = this;
+    let ix = 0, pathname;
+    const cbs = this._optionsCallbacks, self = this;
     try {
-      ix = 0;
-      cbs = this._optionsCallbacks;
       pathname = icapReq.parsedUri.pathname;
       next();
       this.logger.info('%s OPTIONS - %s - %s', this.id, (icapRes.icapStatus || []).join(' '), (icapRes.httpMethod || []).join(' '));
@@ -93,7 +91,7 @@ function ICAPServer(options) {
   this._requestCallbacks = [];
   this.on('httpRequest', function(icapReq, icapRes, req, res) {
     function next() {
-      var fn = cbs[ix++];
+      const fn = cbs[ix++];
       if (!fn || icapRes.done) {
         return;
       }
@@ -104,10 +102,9 @@ function ICAPServer(options) {
       }
     }
 
-    var ix, cbs, host, self = this;
+    let ix = 0, host;
+    const cbs = this._requestCallbacks, self = this;
     try {
-      ix = 0;
-      cbs = this._requestCallbacks;
       host = req.parsedUri.hostname;
       next();
       this.logger.info('%s REQMOD - %s - %s - %s', this.id, (icapRes.icapStatus || []).join(' '), req.line, (icapRes.httpMethod || []).join(' '));
@@ -119,7 +116,7 @@ function ICAPServer(options) {
   this._responseCallbacks = [];
   this.on('httpResponse', function(icapReq, icapRes, req, res) {
     function next() {
-      var fn = cbs[ix++];
+      const fn = cbs[ix++];
       if (!fn || icapRes.done) {
         return;
       }
@@ -130,10 +127,9 @@ function ICAPServer(options) {
       }
     }
 
-    var ix, cbs, host, self = this;
+    let ix = 0, host;
+    const cbs = this._responseCallbacks, self = this;
     try {
-      ix = 0;
-      cbs = this._responseCallbacks;
       host = req.parsedUri.hostname;
       next();
       this.logger.info('%s RESPMOD - %s - %s - %s', this.id, (icapRes.icapStatus || []).join(' '), req.line, (icapRes.httpMethod || []).join(' '));
@@ -181,7 +177,7 @@ ICAPServer.prototype = Object.assign({}, EventEmitter.prototype, {
   },
 
   request: function(domain, cb) {
-    var domainList;
+    let domainList;
     if (!!domain && domain instanceof DomainList) {
       domainList = domain;
     } else if (!domain || domain === '*') {
@@ -197,7 +193,7 @@ ICAPServer.prototype = Object.assign({}, EventEmitter.prototype, {
   },
 
   response: function(domain, cb) {
-    var domainList;
+    let domainList;
     if (!!domain && domain instanceof DomainList) {
       domainList = domain;
     } else if (!domain || domain === '*') {

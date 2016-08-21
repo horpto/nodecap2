@@ -1,7 +1,7 @@
 "use strict";
 
-var util = require('util');
-var codes = require('./codes');
+const util = require('util');
+const codes = require('./codes');
 
 /*
  *  ICAPError(code)
@@ -9,7 +9,7 @@ var codes = require('./codes');
  *    @param code: numeric error code or string message
  */
 function ICAPError(code) {
-  var message;
+  let message;
   Error.call(this);
   Error.captureStackTrace(this, this.constructor);
   if (typeof code === 'string') {

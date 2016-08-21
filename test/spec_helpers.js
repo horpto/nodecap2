@@ -1,30 +1,30 @@
-var fs = require('fs');
-var path = require('path');
-var net = require('net');
-var test = require('tap').test;
-var exampleConfig = require('./spec_server');
-var ICAPServer = require('..').ICAPServer;
+const fs = require('fs');
+const path = require('path');
+const net = require('net');
+const test = require('tap').test;
+const exampleConfig = require('./spec_server');
+const ICAPServer = require('..').ICAPServer;
 
-var datePattern = /Date\:\s*\w+,\s+\d{1,2}\s+\w+\s+\d{4}\s+\d{2}:\d{2}:\d{2}\s+GMT/g;
-var dateReplace = 'Date: ' + (new Date()).toGMTString();
+const datePattern = /Date\:\s*\w+,\s+\d{1,2}\s+\w+\s+\d{4}\s+\d{2}:\d{2}:\d{2}\s+GMT/g;
+const dateReplace = 'Date: ' + (new Date()).toGMTString();
 
-var istagPattern = /ISTag\:\s*\S+/g;
-var istagReplace = 'ISTag: NODECAP-TEST';
+const istagPattern = /ISTag\:\s*\S+/g;
+const istagReplace = 'ISTag: NODECAP-TEST';
 
-var sampleDir = 'samples/';
+const sampleDir = 'samples/';
 
-var testIO = function(testName, sampleName, configureFn, configureInput) {
+const testIO = function(testName, sampleName, configureFn, configureInput) {
   configureFn = typeof configureFn === 'function' ? configureFn : null;
-  var input = fs.readFileSync(path.resolve(__dirname, sampleDir + sampleName + '.in.txt'), 'utf8');
-  var output = fs.readFileSync(path.resolve(__dirname, sampleDir + sampleName + '.out.txt'), 'utf8');
+  let input = fs.readFileSync(path.resolve(__dirname, sampleDir + sampleName + '.in.txt'), 'utf8');
+  let output = fs.readFileSync(path.resolve(__dirname, sampleDir + sampleName + '.out.txt'), 'utf8');
 
   test(testName, function(t) {
-    var buffer = '';
-    var server = new ICAPServer({
+    let buffer = '';
+    const server = new ICAPServer({
       logLevel: process.argv.indexOf('--debug') >= 0 ? 'debug' : 'info'
     });
 
-    var doneFn = function(err, result) {
+    const doneFn = function(err, result) {
       if (err) {
         console.error(err);
       }
@@ -43,7 +43,7 @@ var testIO = function(testName, sampleName, configureFn, configureInput) {
 
     exampleConfig(server);
     server.listen(function() {
-      var client = net.connect({port: 1344}, function() {
+      const client = net.connect({port: 1344}, function() {
         client.write(input);
       });
       client.on('data', function(data) {

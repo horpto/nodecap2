@@ -1,9 +1,9 @@
 "use strict";
 
-var util = require('util');
-var Request = require('./request');
+const util = require('util');
+const Request = require('./request');
 
-var HTTPRequest = module.exports = function() {
+const HTTPRequest = module.exports = function() {
   Request.call(this);
   this.protocol = 'HTTP';
 };
