@@ -44,7 +44,7 @@ function ICAPHandler(socket, emitter, options) {
 ICAPHandler.prototype = {
   constructor: ICAPHandler,
 
-  initialize: function() {
+  initialize() {
     const self = this;
     const socket = this.socket;
     socket.setTimeout(0);
@@ -89,15 +89,15 @@ ICAPHandler.prototype = {
     });
   },
 
-  emitEvent: function(eventName) {
+  emitEvent(eventName) {
     this.emitter.emit(eventName, this.icapRequest, this.icapResponse, this.httpRequest, this.httpResponse);
   },
 
-  emitError: function(err) {
+  emitError(err) {
     this.emitter.emit('error', err, this.icapRequest, this.icapResponse, this.httpRequest, this.httpResponse);
   },
 
-  resetState: function(isFirstReset) {
+  resetState(isFirstReset) {
     if (!isFirstReset) {
       this.emitEvent('end');
       this.logger.debug('[%s] handler resetState', this.id);
@@ -123,7 +123,7 @@ ICAPHandler.prototype = {
     this.parsePreview = false;
   },
 
-  nextState: function(state, offset) {
+  nextState(state, offset) {
     if (!this.nextIfNotDone()) {
       return;
     }
@@ -143,7 +143,7 @@ ICAPHandler.prototype = {
     }
   },
 
-  nextIfNotDone: function() {
+  nextIfNotDone() {
     if (this.icapResponse.done) {
       this.resetState();
       this.nextState();
@@ -152,7 +152,7 @@ ICAPHandler.prototype = {
     return true;
   },
 
-  nextStateEncapsulated: function() {
+  nextStateEncapsulated() {
     if (!this.nextIfNotDone()) {
       return;
     }
@@ -193,7 +193,7 @@ ICAPHandler.prototype = {
     }
   },
 
-  read: function(helperMethod) {
+  read(helperMethod) {
     const result = helperMethod(this.buffer, this.bufferIndex);
     if (result && typeof result.index === 'number') {
       this.bufferIndex = result.index;
@@ -202,7 +202,7 @@ ICAPHandler.prototype = {
     return result;
   },
 
-  readChunk: function() {
+  readChunk() {
     if (!this.chunkSize) {
       const line = this.read(helpers.line);
       if (!line || !line.str.length) {
@@ -230,13 +230,13 @@ ICAPHandler.prototype = {
       this.bufferIndex += this.chunkSize + 2; // skip CRLF
       this.chunkSize = null;
       return {
-        data: data
+        data
       };
     }
     return null;
   },
 
-  readAllHeaders: function() {
+  readAllHeaders() {
     let header;
     const headers = {};
     while ((header = this.read(helpers.header)) !== null) {
@@ -260,7 +260,7 @@ ICAPHandler.prototype = {
     return null;
   },
 
-  icapmethod: function() {
+  icapmethod() {
     const method = this.read(helpers.method);
     if (!method) {
       return;
@@ -272,7 +272,7 @@ ICAPHandler.prototype = {
     this.nextState(states.icapheader);
   },
 
-  icapheader: function() {
+  icapheader() {
     const headers = this.readAllHeaders();
     if (!headers) {
       this.logger.warn('[%s] icapheader - no headers!', this.id);
@@ -307,7 +307,7 @@ ICAPHandler.prototype = {
     }
   },
 
-  requestheader: function() {
+  requestheader() {
     const method = this.read(helpers.method);
     if (!method) {
       throw new ICAPError('Request method not found');
@@ -326,7 +326,7 @@ ICAPHandler.prototype = {
     this.nextStateEncapsulated();
   },
 
-  responseheader: function() {
+  responseheader() {
     const status = this.read(helpers.status);
     if (!status) {
       throw new ICAPError('Response method not found');
@@ -345,7 +345,7 @@ ICAPHandler.prototype = {
     this.nextStateEncapsulated();
   },
 
-  parsepreview: function() {
+  parsepreview() {
     if (!this.previewBuffer) {
       this.previewBuffer = new Buffer(0);
     }
@@ -378,7 +378,7 @@ ICAPHandler.prototype = {
     }
   },
 
-  parsebody: function() {
+  parsebody() {
     if (this.previewBuffer) {
       this.logger.debug('[%s] parsebody preview chunk length %s', this.id, this.previewBuffer.length);
       this.icapRequest.push(this.previewBuffer);

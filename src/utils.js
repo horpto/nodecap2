@@ -11,6 +11,6 @@ function noop() {
 }
 
 module.exports = {
-  "uniqueId": uniqueId,
-  "noop": noop
+  uniqueId,
+  noop
 };

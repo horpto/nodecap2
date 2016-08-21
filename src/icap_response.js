@@ -36,23 +36,23 @@ const ICAPResponse = module.exports = function(id, stream, options) {
 util.inherits(ICAPResponse, Transform);
 
 Object.assign(ICAPResponse.prototype, Response.prototype, {
-  _getCode: function(code, options) {
+  _getCode(code, options) {
     code = code || 500;
     options = options || {};
     return [options.version || 'ICAP/1.0', code, codes[code][0]];
   },
-  setIcapStatusCode: function(code, options) {
+  setIcapStatusCode(code, options) {
     this.icapStatus = this._getCode(code, options);
   },
-  setIcapHeaders: function(headers) {
+  setIcapHeaders(headers) {
     // TODO: filter headers???
     this.icapHeaders = Object.assign(this.icapHeaders, headers);
   },
-  setHttpMethod: function(options) {
+  setHttpMethod(options) {
     this.httpMethodType = 'request';
     this.httpMethod = [options.method, options.uri, options.version || 'HTTP/1.1'];
   },
-  setHttpStatus: function(code, options) {
+  setHttpStatus(code, options) {
     if (typeof code === 'object') {
       options = code;
       code = options.code || null;
@@ -62,13 +62,13 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
     this.httpMethodType = 'response';
     this.httpMethod = this._getCode(code, options);
   },
-  setHttpHeaders: function(headers) {
+  setHttpHeaders(headers) {
     this.httpHeaders = Object.assign(this.httpHeaders, headers);
   },
-  hasFilter: function() {
+  hasFilter() {
     return typeof this.filter === 'function';
   },
-  setFilter: function(callAtEnd, filterFn) {
+  setFilter(callAtEnd, filterFn) {
     if (typeof callAtEnd === 'function') {
       filterFn = callAtEnd;
       callAtEnd = false;
@@ -76,7 +76,7 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
     this.buffer = callAtEnd ? new Buffer(0) : null;
     this.filter = filterFn;
   },
-  _joinHeaders: function (status, headers) {
+  _joinHeaders(status, headers) {
     let block = status.join(' ') + crlf;
     for (let key in headers) {
       const value = headers[key];
@@ -91,7 +91,7 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
     }
     return block;
   },
-  _setEncapsulatedHeader: function(hasBody, headerBlock) {
+  _setEncapsulatedHeader(hasBody, headerBlock) {
     const encapsulated = [];
     let bodyType = "null-body";
     if (this.httpMethodType === 'request') {
@@ -109,7 +109,7 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
     this.icapHeaders['Encapsulated'] = encapsulated.join(', ');
   },
 
-  _checkDefaultIcapHeaders: function() {
+  _checkDefaultIcapHeaders() {
     this.icapHeaders['Date'] = (new Date()).toGMTString();
     if (!this.icapHeaders['ISTag']) {
       this.icapHeaders['ISTag'] = currentISTag;
@@ -119,7 +119,7 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
     }
   },
 
-  writeHeaders: function(hasBody) {
+  writeHeaders(hasBody) {
     this.hasBody = hasBody;
 
     if (!this.icapStatus) {
@@ -138,19 +138,19 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
     this.push(icapBlock + crlf + headerBlock);
   },
 
-  allowUnchanged: function() {
+  allowUnchanged() {
     // user should check status 204 is allowed own
     this.setIcapStatusCode(204);
     this.writeHeaders(false);
     this.end();
   },
 
-  continuePreview: function() {
+  continuePreview() {
     const code = this._getCode(100);
     this.push(code.join(' ') + crlf + crlf);
   },
 
-  _writeHandyChunk: function(data) {
+  _writeHandyChunk(data) {
     // filter output and abort if no response
     // note: this allows filter authors to buffer data internally
     if (this.filter) {
@@ -167,8 +167,8 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
   },
 
   // TODO: more async
-  _divideIntoHandyChunks: function(data, cb) {
-    let size = this.chunkSize;
+  _divideIntoHandyChunks(data, cb) {
+    const size = this.chunkSize;
     let tmp = data.slice(0, size);
     data = data.slice(size);
     while (tmp.length) {
@@ -179,7 +179,7 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
     return cb();
   },
 
-  _writeChunk: function(data, cb) {
+  _writeChunk(data, cb) {
     if (this.buffer) {
       // TODO: maybe concat in buffer
       this.buffer = Buffer.concat([this.buffer, data], this.buffer.length + data.length);
@@ -194,7 +194,7 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
 
   // alert the filter that stream is over
   // can return data to write it before the stream is ended
-  _streamIsOver: function() {
+  _streamIsOver() {
     if (this.filter && this.buffer) {
       const data = this.filter(this.buffer);
       this.filter = null;
@@ -206,7 +206,7 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
     this.push('0\r\n\r\n');
   },
 
-  _transform: function(data, _, cb) {
+  _transform(data, _, cb) {
     // not write null chunks because they signal about end of stream
     if (data.length) {
       return this._writeChunk(data, cb);
@@ -215,7 +215,7 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
   },
 
   // TODO: legacy, remove from next version
-  _write: function(data, enc, cb) {
+  _write(data, enc, cb) {
     if (cb == null) {
       if (data) {
         this.write(data);
@@ -227,11 +227,11 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
     return Transform.prototype._write.call(this, data, enc, cb);
   },
 
-  send: function(data) {
+  send(data) {
     this.sendData = data;
   },
 
-  _flush: function(cb) {
+  _flush(cb) {
     if (this.hasBody) {
       if (this.sendData) {
         this.write(this.sendData);

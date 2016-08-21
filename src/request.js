@@ -11,14 +11,14 @@ const Request = module.exports = function() {
 };
 
 Object.assign(Request.prototype, {
-  setHeaders: function(headers) {
+  setHeaders(headers) {
     if (!this.headers) {
       this.headers = headers;
       return;
     }
     Object.assign(this.headers, headers);
   },
-  setMethod: function(method) {
+  setMethod(method) {
     Object.assign(this, method);
     if (!this.parsedUri) {
       this.parsedUri = {

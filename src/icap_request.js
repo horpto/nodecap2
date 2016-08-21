@@ -27,7 +27,7 @@ const ICAPRequest = module.exports = function(id) {
 util.inherits(ICAPRequest, EventEmitter);
 
 Object.assign(ICAPRequest.prototype, Request.prototype, {
-  push: function(data) {
+  push(data) {
     if (!this.stream) {
       // icapReq now are closed;
       if (data == null) {
@@ -43,7 +43,7 @@ Object.assign(ICAPRequest.prototype, Request.prototype, {
     }
     return this.stream.end();
   },
-  pipe: function(stream) {
+  pipe(stream) {
     this.stream = stream;
     this.isPrevVersionProto = stream.write == null;
     // icapReq are closed already thus we'are closing stream.
@@ -51,28 +51,28 @@ Object.assign(ICAPRequest.prototype, Request.prototype, {
       this.push(null);
     }
   },
-  hasPreview: function() {
+  hasPreview() {
     return this.headers && 'Preview' in this.headers;
   },
-  hasBody: function() {
+  hasBody() {
     if (!this.encapsulated || !this.encapsulated.length) {
       return null;
     }
     return this.encapsulated[this.encapsulated.length - 1][0] !== 'null-body';
   },
-  hasPreviewBody: function() {
+  hasPreviewBody() {
     return this.hasPreview() && this.hasBody();
   },
-  isReqMod: function() {
+  isReqMod() {
     return this.method === 'REQMOD';
   },
-  isRespMod: function() {
+  isRespMod() {
     return this.method === 'RESPMOD';
   },
-  isOptions: function() {
+  isOptions() {
     return this.method === 'OPTIONS';
   },
-  getPreviewMime: function(cb) {
+  getPreviewMime(cb) {
     if (!this.preview) {
       return cb(null, null);
     }

@@ -50,7 +50,7 @@ const DomainList = module.exports = function(domainList) {
 DomainList.prototype = {
   constructor: DomainList,
 
-  contains: function(domain) {
+  contains(domain) {
     var nearIdx, reversed, expireDomain, now, part, match;
 
     if (this.matchDomains.length === 0) {
@@ -91,12 +91,12 @@ DomainList.prototype = {
     return false;
   },
 
-  clear: function() {
+  clear() {
     this.matchDomains = [];
     this.domainExpiry = {};
   },
 
-  addMany: function(domains, ttl) {
+  addMany(domains, ttl) {
     domains = domains || [];
     ttl = ttl || 0;
     for (var ix = 0; ix < domains.length; ix++) {
@@ -105,7 +105,7 @@ DomainList.prototype = {
     this.matchDomains.sort();
   },
 
-  add: function(domain, ttl, skipSort) {
+  add(domain, ttl, skipSort) {
     domain = (domain || '').trim();
     if (!domain) {
       return;
@@ -114,7 +114,7 @@ DomainList.prototype = {
     let expireDomain;
     if (domain[0] === '.') {
       expireDomain = domain.slice(1);
-      let revExpire = reverse(expireDomain);
+      const revExpire = reverse(expireDomain);
 
       if (binaryIndexNear(this.matchDomains, revExpire) < 0) {
         this.matchDomains.push(revExpire);
@@ -139,7 +139,7 @@ DomainList.prototype = {
     }
   },
 
-  remove: function(domain) {
+  remove(domain) {
     domain = (domain || '').trim();
     if (!domain) {
       return;
@@ -163,7 +163,7 @@ DomainList.prototype = {
     delete this.domainExpiry[fixed];
   },
 
-  toArray: function() {
+  toArray() {
     const domains = [];
     this.matchDomains.forEach(function(domain) {
       if (domain[domain.length - 1] === wildcardStartChar) {

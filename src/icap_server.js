@@ -142,7 +142,7 @@ function ICAPServer(options) {
 ICAPServer.prototype = Object.assign({}, EventEmitter.prototype, {
   constructor: ICAPServer,
 
-  listen: function(port, fn) {
+  listen(port, fn) {
     if (typeof port === 'function') {
       fn = port;
       port = null;
@@ -152,19 +152,19 @@ ICAPServer.prototype = Object.assign({}, EventEmitter.prototype, {
     this.server.listen(port, fn.bind(undefined, port));
   },
 
-  close: function(fn) {
+  close(fn) {
     fn = fn || noop;
     this.server.close(fn);
   },
 
-  error: function(cb) {
+  error(cb) {
     if (typeof cb != 'function') {
       throw new TypeError("expected function, not " + typeof cb);
     }
     this._errorCallbacks.push(cb);
   },
 
-  options: function(path, cb) {
+  options(path, cb) {
     if (!path || path === '*') {
       path = null;
     } else if (!(path instanceof RegExp)) {
@@ -176,7 +176,7 @@ ICAPServer.prototype = Object.assign({}, EventEmitter.prototype, {
     this._optionsCallbacks.push([path, cb]);
   },
 
-  request: function(domain, cb) {
+  request(domain, cb) {
     let domainList;
     if (!!domain && domain instanceof DomainList) {
       domainList = domain;
@@ -192,7 +192,7 @@ ICAPServer.prototype = Object.assign({}, EventEmitter.prototype, {
     this._requestCallbacks.push([domainList, cb]);
   },
 
-  response: function(domain, cb) {
+  response(domain, cb) {
     let domainList;
     if (!!domain && domain instanceof DomainList) {
       domainList = domain;

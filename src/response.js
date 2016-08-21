@@ -9,7 +9,7 @@ const Response = module.exports = function(protocol) {
 };
 
 Object.assign(Response.prototype, {
-  setHeaders: function(headers) {
+  setHeaders(headers) {
     if (!this.headers) {
       this.headers = headers;
       return;

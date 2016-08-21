@@ -30,7 +30,9 @@ module.exports = {
         ],
 
         /* ES6 FEATURES */
-        "no-var": "error"
+        "object-shorthand": "error",
+        "no-var": "error",
+        "prefer-const": "error"
 
     }
 };

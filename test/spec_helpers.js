@@ -75,5 +75,5 @@ const testIO = function(testName, sampleName, configureFn, configureInput) {
 };
 
 module.exports = {
-  testIO: testIO
+  testIO
 };
