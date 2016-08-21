@@ -9,8 +9,6 @@ var HTTPResponse = require('./http_response');
 var helpers = require('./helpers');
 var codes = require('./codes');
 
-var assign = require('./utils').assign;
-
 var states = {
   'icapmethod': 'icapmethod',
   'icapheader': 'icapheader',
@@ -337,7 +335,7 @@ ICAPHandler.prototype = {
     if (!status) {
       throw new ICAPError('Response method not found');
     }
-    assign(this.httpResponse, status);
+    Object.assign(this.httpResponse, status);
 
     var headers = this.readAllHeaders();
     if (!headers) {

@@ -1,7 +1,5 @@
 "use strict";
 
-var assign = require('./utils').assign;
-
 // use as mixin, not classical inheritance
 var Request = module.exports = function() {
   this.headers = null;
@@ -12,16 +10,16 @@ var Request = module.exports = function() {
   this.parsedUri = null;
 };
 
-assign(Request.prototype, {
+Object.assign(Request.prototype, {
   setHeaders: function(headers) {
     if (!this.headers) {
       this.headers = headers;
       return;
     }
-    assign(this.headers, headers);
+    Object.assign(this.headers, headers);
   },
   setMethod: function(method) {
-    assign(this, method);
+    Object.assign(this, method);
     if (!this.parsedUri) {
       this.parsedUri = {
         pathname: ''

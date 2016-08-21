@@ -2,8 +2,7 @@
 
 var util = require('util');
 var EventEmitter = require('eventemitter3');
-var Request = require('./request');
-var assign = require('./utils').assign;
+var Request = require('./request');s
 
 var magic = null;
 
@@ -27,7 +26,7 @@ var ICAPRequest = module.exports = function(id) {
 };
 util.inherits(ICAPRequest, EventEmitter);
 
-assign(ICAPRequest.prototype, Request.prototype, {
+Object.assign(ICAPRequest.prototype, Request.prototype, {
   push: function(data) {
     if (!this.stream) {
       // icapReq now are closed;

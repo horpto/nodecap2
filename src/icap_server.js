@@ -9,7 +9,6 @@ var DomainList = require('./domainlist');
 
 var _utils = require('./utils');
 var noop = _utils.noop;
-var assign = _utils.assign;
 
 /*
  *  ICAPServer
@@ -26,7 +25,7 @@ function ICAPServer(options) {
     ]
   });
 
-  options = assign({
+  options = Object.assign({
     logger: this.logger,
     chunkSize: 4096
   }, options || {});
@@ -144,7 +143,7 @@ function ICAPServer(options) {
   }, this);
 }
 
-ICAPServer.prototype = assign({}, EventEmitter.prototype, {
+ICAPServer.prototype = Object.assign({}, EventEmitter.prototype, {
   constructor: ICAPServer,
 
   listen: function(port, fn) {

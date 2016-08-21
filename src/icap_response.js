@@ -9,12 +9,10 @@ var currentISTag = "NODECAP-" + (new Date()).getTime();
 var crlf = '\r\n';
 var DEFAULT_CHUNK_SIZE = 4096;
 
-var assign = require('./utils').assign;
-
 var ICAPResponse = module.exports = function(id, stream, options) {
   Response.call(this, 'ICAP');
 
-  options = assign(options || {}, {
+  options = Object.assign(options || {}, {
     encoding: null, decodeStrings: true,
     objectMode: false,
     read: null, write: null, writev: null});
@@ -37,7 +35,7 @@ var ICAPResponse = module.exports = function(id, stream, options) {
 };
 util.inherits(ICAPResponse, Transform);
 
-assign(ICAPResponse.prototype, Response.prototype, {
+Object.assign(ICAPResponse.prototype, Response.prototype, {
   _getCode: function(code, options) {
     code = code || 500;
     options = options || {};
@@ -48,7 +46,7 @@ assign(ICAPResponse.prototype, Response.prototype, {
   },
   setIcapHeaders: function(headers) {
     // TODO: filter headers???
-    this.icapHeaders = assign(this.icapHeaders, headers);
+    this.icapHeaders = Object.assign(this.icapHeaders, headers);
   },
   setHttpMethod: function(options) {
     this.httpMethodType = 'request';
@@ -65,7 +63,7 @@ assign(ICAPResponse.prototype, Response.prototype, {
     this.httpMethod = this._getCode(code, options);
   },
   setHttpHeaders: function(headers) {
-    this.httpHeaders = assign(this.httpHeaders, headers);
+    this.httpHeaders = Object.assign(this.httpHeaders, headers);
   },
   hasFilter: function() {
     return typeof this.filter === 'function';

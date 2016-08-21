@@ -7,6 +7,9 @@
     "example": "examples",
     "test": "test"
   },
+  "engine": {
+    "node": ">= 4.4.6"
+  },
   "dependencies": {
     "eventemitter3": "^1.2.0",
     "winston": "^2.2.0"
