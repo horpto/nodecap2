@@ -2,7 +2,7 @@ const path = require('path');
 const test = require('tap').test;
 const DomainList = require('..').DomainList;
 
-test('domainlist should load from file', function(t) {
+test('domainlist should load from file', (t) => {
   const domains = DomainList.fromFile(path.resolve(__dirname, 'domainlist.txt'));
   t.ok(domains.contains('wildcard.com'), 'wildcard should match base domain');
   t.ok(domains.contains('www.wildcard.com'), 'wildcard should match sub-domain');
@@ -16,7 +16,7 @@ test('domainlist should load from file', function(t) {
   t.end();
 });
 
-test('domainlist should load from file into existing list', function(t) {
+test('domainlist should load from file into existing list', (t) => {
   const domains = new DomainList();
   DomainList.fromFile(path.resolve(__dirname, 'domainlist.txt'), domains);
   t.ok(domains.contains('wildcard.com'), 'wildcard should match base domain');
@@ -31,7 +31,7 @@ test('domainlist should load from file into existing list', function(t) {
   t.end();
 });
 
-test('domainlist should clear existing list', function(t) {
+test('domainlist should clear existing list', (t) => {
   const domains = new DomainList();
   DomainList.fromFile(path.resolve(__dirname, 'domainlist.txt'), domains);
   domains.clear();
@@ -42,7 +42,7 @@ test('domainlist should clear existing list', function(t) {
   t.end();
 });
 
-test('domainlist should allow adding domains dynamically', function(t) {
+test('domainlist should allow adding domains dynamically', (t) => {
   const domains = new DomainList();
   domains.addMany(['a.com', '.b.com']);
   t.ok(domains.contains('a.com'), 'contains addMany fixed');
@@ -52,7 +52,7 @@ test('domainlist should allow adding domains dynamically', function(t) {
   t.end();
 });
 
-test('domainlist should allow adding domains dynamically', function(t) {
+test('domainlist should allow adding domains dynamically', (t) => {
   const domains = new DomainList();
   t.ok(!domains.contains('wildcard.com'), 'should not match unlisted domain');
   domains.add('fixed.com');
@@ -66,7 +66,7 @@ test('domainlist should allow adding domains dynamically', function(t) {
   t.end();
 });
 
-test('domainlist should remove fixed/wildcard version of fixed domains', function(t) {
+test('domainlist should remove fixed/wildcard version of fixed domains', (t) => {
   const domains = DomainList.fromFile(path.resolve(__dirname, 'domainlist.txt'));
   domains.remove('wildcard.com');
   t.ok(!domains.contains('wildcard.com'), 'should not match base domain of removed wildcard');
@@ -79,7 +79,7 @@ test('domainlist should remove fixed/wildcard version of fixed domains', functio
   t.end();
 });
 
-test('domainlist should remove fixed/wildcard version of wildcard domains', function(t) {
+test('domainlist should remove fixed/wildcard version of wildcard domains', (t) => {
   const domains = DomainList.fromFile(path.resolve(__dirname, 'domainlist.txt'));
   domains.remove('.wildcard.com');
   t.ok(!domains.contains('wildcard.com'), 'should not match base domain of removed wildcard');
@@ -91,7 +91,7 @@ test('domainlist should remove fixed/wildcard version of wildcard domains', func
 
   t.end();
 });
-test('domainlist should handle domains beyond the sorted match indexes', function(t) {
+test('domainlist should handle domains beyond the sorted match indexes', (t) => {
   const domains = new DomainList();
 
   domains.add('.b.com');
@@ -105,7 +105,7 @@ test('domainlist should handle domains beyond the sorted match indexes', functio
 });
 
 
-test('domainlist should handle domains beyond the sorted match indexes', function(t) {
+test('domainlist should handle domains beyond the sorted match indexes', (t) => {
   const domains = new DomainList();
 
   domains.add('b.com');
@@ -120,7 +120,7 @@ test('domainlist should handle domains beyond the sorted match indexes', functio
 });
 
 
-test('domainlist should handle domains beyond the sorted match indexes', function(t) {
+test('domainlist should handle domains beyond the sorted match indexes', (t) => {
   const domains = new DomainList();
 
   domains.add('c.com');
@@ -138,7 +138,7 @@ test('domainlist should handle domains beyond the sorted match indexes', functio
   t.end();
 });
 
-test('domainlist should handle adding subdomains of wildcard domains', function(t) {
+test('domainlist should handle adding subdomains of wildcard domains', (t) => {
   const domains = new DomainList();
   domains.add('a.com');
   domains.add('b.com');
@@ -175,7 +175,7 @@ test('domainlist should handle adding subdomains of wildcard domains', function(
   t.end();
 });
 
-test('domainlist should expire domains', function(t) {
+test('domainlist should expire domains', (t) => {
   let now = Date.now();
   const nowFn = Date.now;
   Date.now = function() {
@@ -202,7 +202,7 @@ test('domainlist should expire domains', function(t) {
   t.end();
 });
 
-test('domainlist should return domains as array', function(t) {
+test('domainlist should return domains as array', (t) => {
   const domains = new DomainList();
   domains.add('fixed.com');
   domains.add('.wildcard.com');

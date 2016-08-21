@@ -5,12 +5,12 @@ const server = new ICAPServer({
   debug: false
 });
 console.log('Starting ICAP server...');
-server.listen(function(port) {
+server.listen((port) => {
   console.log('ICAP server listening on port ' + port);
 });
 
 //  only configure RESPMOD bc only modifying responses
-server.options('/response', function(icapReq, icapRes, next) {
+server.options('/response', (icapReq, icapRes, next) => {
   icapRes.setIcapStatusCode(200);
   icapRes.setIcapHeaders({
     'Methods': 'RESPMOD',
@@ -25,7 +25,7 @@ server.options('/response', function(icapReq, icapRes, next) {
 });
 
 //  return error if options path not recognized
-server.options('*', function(icapReq, icapRes, next) {
+server.options('*', (icapReq, icapRes, next) => {
   if (!icapRes.done) {
     icapRes.setIcapStatusCode(404);
     icapRes.writeHeaders(false);
@@ -37,7 +37,7 @@ server.options('*', function(icapReq, icapRes, next) {
 
 
 //  helper to accept a request/response
-const acceptRequest = function(icapReq, icapRes, req, res) {
+function acceptRequest(icapReq, icapRes, req, res) {
   if (!icapRes.hasFilter() && icapReq.hasPreview()) {
     icapRes.allowUnchanged();
     return;
@@ -58,11 +58,11 @@ const acceptRequest = function(icapReq, icapRes, req, res) {
   icapRes.writeHeaders(hasBody);
   // .pipe() or .end() must be called.
   icapReq.pipe(icapRes);
-};
+}
 
 
 //  filter html responses
-server.response('*', function(icapReq, icapRes, req, res, next) {
+server.response('*', (icapReq, icapRes, req, res, next) => {
   // pass through if http error
   if (res.code !== 200) {
     return next();
@@ -80,7 +80,7 @@ server.response('*', function(icapReq, icapRes, req, res, next) {
 
   // `filter` function should be a synchronous, but you can use streams now
   // configure a filter that will run only after the full response data is received
-  icapRes.setFilter(true, function(buffer) {
+  icapRes.setFilter(true, (buffer) => {
     // buffer are always Buffer instance
     const str = buffer.toString('utf8');
 
@@ -107,7 +107,7 @@ server.response('*', acceptRequest);
 
 //  errors
 //  icap error
-server.error(function(err, icapReq, icapRes, next) {
+server.error((err, icapReq, icapRes, next) => {
   console.error(err);
   if (!icapRes.done) {
     icapRes.setIcapStatusCode(500);
@@ -118,7 +118,7 @@ server.error(function(err, icapReq, icapRes, next) {
 });
 
 //  general application error
-process.on('uncaughtException', function(err) {
+process.on('uncaughtException', (err) => {
   console.error(err.message);
   if (err.stack) {
     console.error(err.stack);

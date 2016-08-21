@@ -1,12 +1,12 @@
 const helpers = require('./spec_helpers');
 const DomainList = require('..').DomainList;
 
-helpers.testIO('server should allow whitelist and block unlisted domains', 'whitelist', function(t, server, cb) {
+helpers.testIO('server should allow whitelist and block unlisted domains', 'whitelist', (t, server, cb) => {
   const domains = new DomainList();
   domains.add('allowed.com');
 
   // handle whitelisted domains normally
-  server.request(domains, function(icapReq, icapRes, req, res, next) {
+  server.request(domains, (icapReq, icapRes, req, res, next) => {
     icapRes.setIcapStatusCode(200);
     icapRes.setIcapHeaders(icapReq.headers);
     icapRes.setHttpMethod(req);
@@ -16,7 +16,7 @@ helpers.testIO('server should allow whitelist and block unlisted domains', 'whit
   });
 
   // handle all other domains with 403 rejected
-  server.request('*', function(icapReq, icapRes, req, res, next) {
+  server.request('*', (icapReq, icapRes, req, res, next) => {
     icapRes.setIcapStatusCode(200);
     icapRes.setIcapHeaders(icapReq.headers);
     icapRes.setHttpStatus(403);

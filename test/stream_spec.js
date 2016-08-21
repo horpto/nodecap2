@@ -1,9 +1,9 @@
 const helpers = require('./spec_helpers');
 const zlib = require('zlib');
 
-helpers.testIO('should support streams', 'stream', function(t, server, cb) {
+helpers.testIO('should support streams', 'stream', (t, server, cb) => {
   // handle whitelisted domains normally
-  server.request('*', function(icapReq, icapRes, req, res, next) {
+  server.request('*', (icapReq, icapRes, req, res, next) => {
     icapRes.setIcapStatusCode(200);
     icapRes.setIcapHeaders(icapReq.headers);
     icapRes.setHttpMethod(req);
@@ -16,7 +16,8 @@ helpers.testIO('should support streams', 'stream', function(t, server, cb) {
   });
 
   setTimeout(cb, 1500);
-}, function(input) {
+},
+(input) =>{
   const firstCh = zlib.gzipSync('I am posting this information.');
   const secondCh = zlib.gzipSync('I was posting that information.');
 

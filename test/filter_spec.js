@@ -1,6 +1,6 @@
 const helpers = require('./spec_helpers');
 
-const replaceWords = function(icap, pattern, value) {
+function replaceWords(icap, pattern, value) {
   icap.uri = icap.uri.replace(pattern, value);
   for (const key in icap.headers) {
     if (!icap.headers.hasOwnProperty(key) || !icap.headers[key]) {
@@ -8,12 +8,12 @@ const replaceWords = function(icap, pattern, value) {
     }
     icap.headers[key] = icap.headers[key].replace(pattern, value);
   }
-};
+}
 
-helpers.testIO('should replace "posting" with "-------"', 'filter', function(t, server, cb) {
+helpers.testIO('should replace "posting" with "-------"', 'filter', (t, server, cb) => {
   // handle whitelisted domains normally
-  server.request('*', function(icapReq, icapRes, req, res, next) {
-    replaceWords(req, /posting/g, function(match) {
+  server.request('*', (icapReq, icapRes, req, res, next) => {
+    replaceWords(req, /posting/g, (match) => {
       let str = '', ix = match.length;
       while (ix--) {
         str += '-';
@@ -26,7 +26,7 @@ helpers.testIO('should replace "posting" with "-------"', 'filter', function(t, 
     icapRes.setHttpMethod(req);
     icapRes.setHttpHeaders(req.headers);
     icapRes.writeHeaders(icapReq.hasBody());
-    icapRes.setFilter(function(data) {
+    icapRes.setFilter((data) => {
       const str = data.toString();
       if (/posting/.test(str)) {
         return str.replace(/posting/g, '-------');

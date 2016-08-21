@@ -33,11 +33,8 @@ function ICAPHandler(socket, emitter, options) {
   this.logger = options.logger;
   this.options = options;
   this.buffer = new Buffer(0);
-  this.bufferIndex = 0;
-  this.icapBodyStartIndex = 0;
-  this.waitOffset = 0;
 
-  this.resetState(true);
+  this.clearState();
   this.initialize();
 }
 
@@ -45,46 +42,45 @@ ICAPHandler.prototype = {
   constructor: ICAPHandler,
 
   initialize() {
-    const self = this;
     const socket = this.socket;
     socket.setTimeout(0);
 
-    socket.on('connect', function() {
-      self.logger.debug('[%s] socket connect', self.id);
-      self.emitEvent('connect');
+    socket.on('connect', () => {
+      this.logger.debug('[%s] socket connect', this.id);
+      this.emitEvent('connect');
     });
 
-    socket.on('data', function(data) {
-      if (self.buffer.length === 0) {
-        self.buffer = data;
+    socket.on('data', (data) => {
+      if (this.buffer.length === 0) {
+        this.buffer = data;
       } else {
-        self.buffer = Buffer.concat([self.buffer, data], self.buffer.length + data.length);
+        this.buffer = Buffer.concat([this.buffer, data], this.buffer.length + data.length);
       }
-      self.nextState();
+      this.nextState();
     });
 
-    socket.on('end', function() {
-      self.logger.debug('[%s] socket end', self.id);
-      self.emitEvent('closed');
+    socket.on('end', () => {
+      this.logger.debug('[%s] socket end', this.id);
+      this.emitEvent('closed');
       socket.destroy();
     });
 
-    socket.on('timeout', function() {
-      self.logger.debug('[%s] socket timeout', self.id);
+    socket.on('timeout', () => {
+      this.logger.debug('[%s] socket timeout', this.id);
     });
 
-    socket.on('close', function() {
-      self.logger.debug('[%s] socket close', self.id);
+    socket.on('close', () => {
+      this.logger.debug('[%s] socket close', this.id);
     });
 
-    socket.on('error', function(err) {
-      self.logger.error('[%s] socket error "%s"', self.id, err.message || 'Unknown Error');
+    socket.on('error', (err) => {
+      this.logger.error('[%s] socket error "%s"', this.id, err.message || 'Unknown Error');
 
       // notify the error handler not to process the response further
-      if (self.icapResponse) {
-        self.icapResponse.done = true;
+      if (this.icapResponse) {
+        this.icapResponse.done = true;
       }
-      self.emitError(err);
+      this.emitError(err);
       socket.destroy();
     });
   },
@@ -97,30 +93,30 @@ ICAPHandler.prototype = {
     this.emitter.emit('error', err, this.icapRequest, this.icapResponse, this.httpRequest, this.httpResponse);
   },
 
-  resetState(isFirstReset) {
-    if (!isFirstReset) {
-      this.emitEvent('end');
-      this.logger.debug('[%s] handler resetState', this.id);
-    }
+  resetState() {
+    this.emitEvent('end');
+    this.logger.debug('[%s] handler resetState', this.id);
     if (this.icapRequest) {
       this.icapRequest.removeAllListeners();
     }
+
+    this.buffer = this.buffer.slice(this.bufferIndex, this.buffer.length);
+    this.clearState();
+  },
+
+  clearState() {
     this.id = process.pid + ':' + this.handlerCount + ':' + this.currentQuery++;
     this.state = states.icapmethod;
     this.icapRequest = new ICAPRequest(this.id);
     this.icapResponse = new ICAPResponse(this.id, this.socket, this.options);
     this.httpRequest = new HTTPRequest();
     this.httpResponse = new HTTPResponse();
-
-    if (!isFirstReset) {
-      this.buffer = this.buffer.slice(this.bufferIndex, this.buffer.length);
-      this.bufferIndex = 0;
-      this.icapBodyStartIndex = 0;
-      this.waitOffset = 0;
-    }
     this.chunkSize = null;
     this.previewBuffer = null;
     this.parsePreview = false;
+    this.bufferIndex = 0;
+    this.icapBodyStartIndex = 0;
+    this.waitOffset = 0;
   },
 
   nextState(state, offset) {

@@ -13,7 +13,7 @@ const server = new ICAPServer({
   debug: false
 });
 console.log('Starting ICAP server...');
-server.listen(function(port) {
+server.listen((port) => {
   console.log('ICAP server listening on port ' + port);
 });
 
@@ -21,7 +21,7 @@ server.listen(function(port) {
 //    to have different options for requests and responses,
 //    configure squid to send these to different ICAP resource paths
 //  REQMOD
-server.options('/request', function(icapReq, icapRes, next) {
+server.options('/request', (icapReq, icapRes, next) => {
   icapRes.setIcapStatusCode(200);
   icapRes.setIcapHeaders({
     'Methods': 'REQMOD',
@@ -32,7 +32,7 @@ server.options('/request', function(icapReq, icapRes, next) {
 });
 
 //  RESPMOD
-server.options('/response', function(icapReq, icapRes, next) {
+server.options('/response', (icapReq, icapRes, next) => {
   icapRes.setIcapStatusCode(200);
   icapRes.setIcapHeaders({
     'Methods': 'RESPMOD',
@@ -47,7 +47,7 @@ server.options('/response', function(icapReq, icapRes, next) {
 });
 
 //  return error if options path not recognized
-server.options('*', function(icapReq, icapRes, next) {
+server.options('*', (icapReq, icapRes, next) => {
   if (!icapRes.done) {
     icapRes.setIcapStatusCode(404);
     icapRes.writeHeaders(false);
@@ -59,7 +59,7 @@ server.options('*', function(icapReq, icapRes, next) {
 
 
 //  helper to accept a request/response
-const acceptRequest = function(icapReq, icapRes, req, res) {
+function acceptRequest(icapReq, icapRes, req, res) {
   if (!icapRes.hasFilter() && icapReq.hasPreview()) {
     icapRes.allowUnchanged();
     return;
@@ -85,12 +85,12 @@ const acceptRequest = function(icapReq, icapRes, req, res) {
   }
   icapRes.writeHeaders(hasBody);
   icapReq.pipe(icapRes);
-};
+}
 
 const errorPage = "page blocked";
 
 //  helper to reject a request/response
-const rejectRequest = function(icapReq, icapRes, req, res) {
+function rejectRequest(icapReq, icapRes, req, res) {
   let hasBody = false;
   const headers = {};
   // do *not* set Content-Length: causes an issue with Squid
@@ -113,7 +113,7 @@ const rejectRequest = function(icapReq, icapRes, req, res) {
   // WARNING: don't forget to write.end() after .send()
   // or your data will not send.:(
   icapRes.end();
-};
+}
 
 
 //  handlers
@@ -128,7 +128,7 @@ server.response('*', rejectRequest);
 
 //  errors
 //  icap error
-server.error(function(err, icapReq, icapRes, next) {
+server.error((err, icapReq, icapRes, next) => {
   console.error(err);
   if (!icapRes.done) {
     icapRes.setIcapStatusCode(500);
@@ -139,7 +139,7 @@ server.error(function(err, icapReq, icapRes, next) {
 });
 
 //  general application error
-process.on('uncaughtException', function(err) {
+process.on('uncaughtException', (err) => {
   console.error(err.message);
   if (err.stack) {
     console.error(err.stack);

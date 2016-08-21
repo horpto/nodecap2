@@ -1,8 +1,8 @@
 
 // run the server
-module.exports = function(server) {
+module.exports = (server) => {
   // CONFIGURE OPTIONS
-  server.options('/request', function(icapReq, icapRes, next) {
+  server.options('/request', (icapReq, icapRes, next) => {
     icapRes.setIcapStatusCode(200);
     icapRes.setIcapHeaders({
       'Methods': 'REQMOD',
@@ -12,7 +12,7 @@ module.exports = function(server) {
     icapRes.end();
   });
 
-  server.options('/response', function(icapReq, icapRes, next) {
+  server.options('/response', (icapReq, icapRes, next) => {
     icapRes.setIcapStatusCode(200);
     icapRes.setIcapHeaders({
       'Methods': 'RESPMOD',
@@ -26,7 +26,7 @@ module.exports = function(server) {
     icapRes.end();
   });
 
-  server.options('*', function(icapReq, icapRes, next) {
+  server.options('*', (icapReq, icapRes, next) => {
     if (!icapRes.done) {
       icapRes.setIcapStatusCode(404);
       icapRes.writeHeaders(false);
@@ -35,7 +35,7 @@ module.exports = function(server) {
   });
 
   // HANDLE REQMOD
-  server.request('*', function(icapReq, icapRes, req, res, next) {
+  server.request('*', (icapReq, icapRes, req, res, next) => {
     // handle previews before doing anything else: icapReq.preview is buffer of preview data
     if (icapReq.hasPreview()) {
       icapRes.allowUnchanged();
@@ -50,7 +50,7 @@ module.exports = function(server) {
   });
 
   // HANDLE RESPMOD
-  server.response('*', function(icapReq, icapRes, req, res, next) {
+  server.response('*', (icapReq, icapRes, req, res, next) => {
     icapRes.setIcapStatusCode(200);
     icapRes.setIcapHeaders(icapReq.headers);
     icapRes.setHttpStatus(res);
@@ -65,7 +65,7 @@ module.exports = function(server) {
   });
 
   // HANDLE ERRORS
-  server.error(function(err, icapReq, icapRes, next) {
+  server.error((err, icapReq, icapRes, next) => {
     // console.error(err);
     // console.error(err.message, err.stack || 'no stack trace');
     if (!icapRes.done) {

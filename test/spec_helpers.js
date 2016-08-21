@@ -13,25 +13,25 @@ const istagReplace = 'ISTag: NODECAP-TEST';
 
 const sampleDir = 'samples/';
 
-const testIO = function(testName, sampleName, configureFn, configureInput) {
+function testIO(testName, sampleName, configureFn, configureInput) {
   configureFn = typeof configureFn === 'function' ? configureFn : null;
   let input = fs.readFileSync(path.resolve(__dirname, sampleDir + sampleName + '.in.txt'), 'utf8');
   let output = fs.readFileSync(path.resolve(__dirname, sampleDir + sampleName + '.out.txt'), 'utf8');
 
-  test(testName, function(t) {
+  test(testName, (t) => {
     let buffer = '';
     const server = new ICAPServer({
       logLevel: process.argv.indexOf('--debug') >= 0 ? 'debug' : 'info'
     });
 
-    const doneFn = function(err, result) {
+    function doneFn(err, result) {
       if (err) {
         console.error(err);
       }
       if (result) {
         console.log(result);
       }
-    };
+    }
 
     // run the test-specific server configuration before starting server & test
     if (configureFn) {
@@ -42,37 +42,37 @@ const testIO = function(testName, sampleName, configureFn, configureInput) {
     }
 
     exampleConfig(server);
-    server.listen(function() {
-      const client = net.connect({port: 1344}, function() {
+    server.listen(() => {
+      const client = net.connect({port: 1344}, () => {
         client.write(input);
       });
-      client.on('data', function(data) {
+      client.on('data', (data) => {
         buffer += data.toString('utf8');
       });
-      client.on('end', function() {
+      client.on('end', () => {
         console.log('client end');
       });
-      client.on('error', function(err) {
+      client.on('error', (err) => {
         console.error("CLIENT ERROR", err);
         if (err.stack) {
           console.error(err.stack);
         }
       });
 
-      setTimeout(function() {
+      setTimeout(() => {
         client.end();
         buffer = buffer.replace(datePattern, dateReplace).replace(istagPattern, istagReplace);
         output = output.replace(datePattern, dateReplace).replace(istagPattern, istagReplace);
         //console.error("BUFFER:", buffer);
         //console.error("OUTPUT:", output);
         t.equal(buffer, output, 'should have expected icap responses');
-        server.close(function() {
+        server.close(() => {
           t.end();
         });
       }, 1000);
     });
   });
-};
+}
 
 module.exports = {
   testIO

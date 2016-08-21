@@ -7,15 +7,15 @@ const path = require('path');
 
 // http://jsperf.com/string-reverse-methods-performance
 // lame_reverse:
-const reverse = function (s) {
+function reverse(s) {
   for (var i = s.length, o = ''; i--; o += s[i]);
   return o;
-};
+}
 
 // For a sorted list, binary search:
 // Find the index + 1 of the exact matching element
 // or negative (index + 1) preceding element.
-const binaryIndexNear = function(arr, searchElement) {
+function binaryIndexNear(arr, searchElement) {
   var minIndex = 0;
   var maxIndex = arr.length - 1;
   var currentIndex = 0;
@@ -34,13 +34,13 @@ const binaryIndexNear = function(arr, searchElement) {
     }
   }
   return -(maxIndex <= 0 ? 1 : (maxIndex + 1));
-};
+}
 
 const wildcardStartChar = '\0';
 const wildcardEndChar = '\xFF';
 const wildcardEndChars = [wildcardStartChar, wildcardEndChar];
 
-const DomainList = module.exports = function(domainList) {
+const DomainList = module.exports = function DomainList(domainList) {
   domainList = domainList || [];
   this.matchDomains = [];
   this.domainExpiry = {};
@@ -157,7 +157,7 @@ DomainList.prototype = {
       reverse(wildcardStartChar + wildcard),
       reverse(wildcardEndChar + wildcard)
     ];
-    this.matchDomains = this.matchDomains.filter(function(existingDomain) {
+    this.matchDomains = this.matchDomains.filter((existingDomain) => {
       return toRemove.indexOf(existingDomain) < 0;
     });
     delete this.domainExpiry[fixed];
@@ -165,7 +165,7 @@ DomainList.prototype = {
 
   toArray() {
     const domains = [];
-    this.matchDomains.forEach(function(domain) {
+    this.matchDomains.forEach((domain) => {
       if (domain[domain.length - 1] === wildcardStartChar) {
         domains.push(reverse(domain.slice(0,-1)));
       } else if (domain[domain.length - 1] !== wildcardEndChar) {

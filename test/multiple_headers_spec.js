@@ -1,7 +1,7 @@
 const helpers = require('./spec_helpers');
 
-helpers.testIO('should correctly collect multiple headers in http', 'multiple_headers', function(test, server, cb) {
-  server.request('*', function(icapReq, icapRes, req, res) {
+helpers.testIO('should correctly collect multiple headers in http', 'multiple_headers', (test, server, cb) => {
+  server.request('*', (icapReq, icapRes, req, res) => {
     const cookie = [
       'MoodleSession=usdecqmal2h23rdh1c7hqjcuj3; path=/',
       'MOODLEID1_=deleted; expires=Thu, 01-Jan-1970 00:00:01 GMT; Max-Age=0; path=/'

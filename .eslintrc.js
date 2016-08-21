@@ -32,7 +32,7 @@ module.exports = {
         /* ES6 FEATURES */
         "object-shorthand": "error",
         "no-var": "error",
-        "prefer-const": "error"
-
+        "prefer-arrow-callback": "error",
+        "prefer-const": "error",
     }
 };

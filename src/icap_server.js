@@ -29,27 +29,26 @@ function ICAPServer(options) {
     chunkSize: 4096
   }, options || {});
 
-  this.server = net.createServer(function(stream) {
+  this.server = net.createServer((stream) => {
     new ICAPHandler(stream, this, options);
-  }.bind(this));
+  });
   this.protocolVersion = 'ICAP/1.0';
   this.systemVersion = 'Node/1';
   this.serverVersion = 'BaseICAP/1.0';
 
   this._errorCallbacks = [];
-  this.on('error', function(err, icapReq, icapRes) {
-    function next() {
+  this.on('error', (err, icapReq, icapRes) => {
+    const next = () => {
       const fn = cbs[ix++];
       if (!fn || icapRes.done) {
         return;
       }
-      fn.call(self, err, icapReq, icapRes, next);
-    }
+      fn.call(this, err, icapReq, icapRes, next);
+    };
 
     let ix = 0;
-    const cbs = this._errorCallbacks, self = this;
+    const cbs = this._errorCallbacks;
     try {
-      ix = 0;
       next();
     } catch (e) {
       try {
@@ -61,24 +60,24 @@ function ICAPServer(options) {
     } finally {
       this.logger.error('%s ERROR - httpmethod: %s - err: %s', this.id, (icapRes.httpMethod || []).join(' '), err.stack || err.message || 'Unknown Error');
     }
-  }, this);
+  });
 
   this._optionsCallbacks = [];
-  this.on('icapOptions', function(icapReq, icapRes) {
-    function next() {
+  this.on('icapOptions', (icapReq, icapRes) => {
+    const next = () => {
       const fn = cbs[ix++];
       if (!fn || icapRes.done) {
         return;
       }
       if (!fn[0] || fn[0].test(pathname)) {
-        fn[1].call(self, icapReq, icapRes, next);
+        fn[1].call(this, icapReq, icapRes, next);
       } else {
         next();
       }
-    }
+    };
 
     let ix = 0, pathname;
-    const cbs = this._optionsCallbacks, self = this;
+    const cbs = this._optionsCallbacks;
     try {
       pathname = icapReq.parsedUri.pathname;
       next();
@@ -86,24 +85,24 @@ function ICAPServer(options) {
     } catch (e) {
       this.emit('error', e, icapReq, icapRes);
     }
-  }, this);
+  });
 
   this._requestCallbacks = [];
-  this.on('httpRequest', function(icapReq, icapRes, req, res) {
-    function next() {
+  this.on('httpRequest', (icapReq, icapRes, req, res) => {
+    const next = () => {
       const fn = cbs[ix++];
       if (!fn || icapRes.done) {
         return;
       }
       if (!fn[0] || fn[0].contains(host)) {
-        fn[1].call(self, icapReq, icapRes, req, res, next);
+        fn[1].call(this, icapReq, icapRes, req, res, next);
       } else {
         next();
       }
-    }
+    };
 
     let ix = 0, host;
-    const cbs = this._requestCallbacks, self = this;
+    const cbs = this._requestCallbacks;
     try {
       host = req.parsedUri.hostname;
       next();
@@ -111,24 +110,24 @@ function ICAPServer(options) {
     } catch (e) {
       this.emit('error', e, icapReq, icapRes);
     }
-  }, this);
+  });
 
   this._responseCallbacks = [];
-  this.on('httpResponse', function(icapReq, icapRes, req, res) {
-    function next() {
+  this.on('httpResponse', (icapReq, icapRes, req, res) => {
+    const next = () => {
       const fn = cbs[ix++];
       if (!fn || icapRes.done) {
         return;
       }
       if (!fn[0] || fn[0].contains(host)) {
-        fn[1].call(self, icapReq, icapRes, req, res, next);
+        fn[1].call(this, icapReq, icapRes, req, res, next);
       } else {
         next();
       }
-    }
+    };
 
     let ix = 0, host;
-    const cbs = this._responseCallbacks, self = this;
+    const cbs = this._responseCallbacks;
     try {
       host = req.parsedUri.hostname;
       next();
@@ -136,7 +135,7 @@ function ICAPServer(options) {
     } catch (e) {
       this.emit('error', e, icapReq, icapRes);
     }
-  }, this);
+  });
 }
 
 ICAPServer.prototype = Object.assign({}, EventEmitter.prototype, {
