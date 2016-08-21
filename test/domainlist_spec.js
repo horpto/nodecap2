@@ -1,4 +1,3 @@
-var fs = require('fs');
 var path = require('path');
 var test = require('tap').test;
 var DomainList = require('..').DomainList;
@@ -49,7 +48,7 @@ test('domainlist should allow adding domains dynamically', function(t) {
   t.ok(domains.contains('a.com'), 'contains addMany fixed');
   t.ok(domains.contains('b.com'), 'contains addMany wildcard-fixed');
   t.ok(domains.contains('www.b.com'), 'contains addMany wildcard');
-  
+
   t.end();
 });
 

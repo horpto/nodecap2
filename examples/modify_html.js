@@ -52,7 +52,7 @@ var acceptRequest = function(icapReq, icapRes, req, res) {
     icapRes.setHttpHeaders(res.headers);
   }
   var hasBody = icapReq.hasBody();
-  if (hasbody && !icapReq.ieof) {
+  if (hasBody && !icapReq.ieof) {
     icapRes.continuePreview();
   }
   icapRes.writeHeaders(hasBody);

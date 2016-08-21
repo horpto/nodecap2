@@ -1,4 +1,3 @@
-var ICAPServer = require('../').ICAPServer;
 
 // run the server
 module.exports = function(server) {

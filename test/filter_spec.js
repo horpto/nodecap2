@@ -1,5 +1,4 @@
 var helpers = require('./spec_helpers');
-var DomainList = require('..').DomainList;
 
 var replaceWords = function(icap, pattern, value) {
   icap.uri = icap.uri.replace(pattern, value);

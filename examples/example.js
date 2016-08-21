@@ -87,6 +87,8 @@ var acceptRequest = function(icapReq, icapRes, req, res) {
   icapReq.pipe(icapRes);
 };
 
+var errorPage = "page blocked";
+
 //  helper to reject a request/response
 var rejectRequest = function(icapReq, icapRes, req, res) {
   var hasBody = false, headers = {};

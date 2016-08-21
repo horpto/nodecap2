@@ -24,7 +24,7 @@
   "scripts": {
     "tap": "tap",
     "test": "tap ./test/*_spec.js",
-    "eslint": "eslint src/"
+    "eslint": "eslint src/ examples/ test/"
   },
   "repository": {
     "type": "git",

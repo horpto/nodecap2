@@ -1,5 +1,4 @@
 var helpers = require('./spec_helpers');
-var DomainList = require('..').DomainList;
 
 var replaceWords = function(icap, pattern, value) {
   icap.uri = icap.uri.replace(pattern, value);
@@ -13,7 +12,7 @@ var replaceWords = function(icap, pattern, value) {
 
 helpers.testIO('should replace "posting" with "-------" via buffer', 'buffer', function(t, server, cb) {
   // handle whitelisted domains normally
-  server.request('*', function(icapReq, icapRes, req, res, next) {
+  server.request('*', function(icapReq, icapRes, req) {
     replaceWords(req, /posting/g, function(match) {
       var str = '', ix = match.length;
       while (ix--) {

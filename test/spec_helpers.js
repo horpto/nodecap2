@@ -13,8 +13,6 @@ var istagReplace = 'ISTag: NODECAP-TEST';
 
 var sampleDir = 'samples/';
 
-var noop = function() {};
-
 var testIO = function(testName, sampleName, configureFn, configureInput) {
   configureFn = typeof configureFn === 'function' ? configureFn : null;
   var input = fs.readFileSync(path.resolve(__dirname, sampleDir + sampleName + '.in.txt'), 'utf8');
