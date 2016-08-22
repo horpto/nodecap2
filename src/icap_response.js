@@ -218,19 +218,6 @@ class ICAPResponse extends Response {
     return cb();
   }
 
-  // TODO: legacy, remove from next version
-  _write(data, enc, cb) {
-    if (cb == null) {
-      if (data) {
-        this.write(data);
-      } else {
-        this.end();
-      }
-      return;
-    }
-    return Transform.prototype._write.call(this, data, enc, cb);
-  }
-
   send(data) {
     this.sendData = data;
   }

@@ -19,7 +19,6 @@ class ICAPRequest extends Request {
 
     this.id = id;
     this.stream = null;
-    this.isPrevVersionProto = false;
     this.preview = null;
     this.ieof = false;
     this.done = false;
@@ -33,9 +32,6 @@ class ICAPRequest extends Request {
       }
       return;
     }
-    if (this.isPrevVersionProto) {
-      return this.stream._write(data);
-    }
     if (data) {
       return this.stream.write(data);
     }
@@ -44,8 +40,7 @@ class ICAPRequest extends Request {
 
   pipe(stream) {
     this.stream = stream;
-    this.isPrevVersionProto = stream.write == null;
-    // icapReq are closed already thus we'are closing stream.
+    // icapReq are closed already thus we are closing stream.
     if (this.done) {
       this.push(null);
     }
