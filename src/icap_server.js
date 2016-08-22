@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const net = require('net');
 const util = require('util');
@@ -54,7 +54,7 @@ module.exports = class ICAPServer extends EventEmitter {
       } catch (e) {
         try {
           icapRes.end();
-          this.logger.error('%s ERROR "%s"', this.id, e.message || 'Unknown Error');
+          this.logger.error("%s ERROR '%s'", this.id, e.message || 'Unknown Error');
         } catch (ee) {
           // can't do anything
         }
@@ -156,7 +156,7 @@ module.exports = class ICAPServer extends EventEmitter {
 
   error(cb) {
     if (typeof cb != 'function') {
-      throw new TypeError("expected function, not " + typeof cb);
+      throw new TypeError('expected function, not ' + typeof cb);
     }
     this._errorCallbacks.push(cb);
   }
@@ -167,8 +167,8 @@ module.exports = class ICAPServer extends EventEmitter {
     } else if (!(path instanceof RegExp)) {
       path = new RegExp('^' + path + '$');
     }
-    if (typeof cb != "function") {
-      throw new TypeError("expected function, not " + typeof cb);
+    if (typeof cb != 'function') {
+      throw new TypeError('expected function, not ' + typeof cb);
     }
     this._optionsCallbacks.push([path, cb]);
   }
@@ -183,8 +183,8 @@ module.exports = class ICAPServer extends EventEmitter {
       domainList = new DomainList();
       domainList.add(domain);
     }
-    if (typeof cb != "function") {
-      throw new TypeError("expected function, not " + typeof cb);
+    if (typeof cb != 'function') {
+      throw new TypeError('expected function, not ' + typeof cb);
     }
     this._requestCallbacks.push([domainList, cb]);
   }
@@ -199,8 +199,8 @@ module.exports = class ICAPServer extends EventEmitter {
       domainList = new DomainList();
       domainList.add(domain);
     }
-    if (typeof cb != "function") {
-      throw new TypeError("expected function, not " + typeof cb);
+    if (typeof cb != 'function') {
+      throw new TypeError('expected function, not ' + typeof cb);
     }
     this._responseCallbacks.push([domainList, cb]);
   }

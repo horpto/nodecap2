@@ -1,10 +1,10 @@
-"use strict";
+'use strict';
 
 const util = require('util');
 const Transform = require('stream').Transform;
 const Response = require('./response');
 const codes = require('./codes');
-const currentISTag = "NODECAP-" + (new Date()).getTime();
+const currentISTag = 'NODECAP-' + (new Date()).getTime();
 
 const crlf = '\r\n';
 const DEFAULT_CHUNK_SIZE = 4096;
@@ -83,7 +83,7 @@ class ICAPResponse extends Response {
     let block = status.join(' ') + crlf;
     for (let key in headers) {
       const value = headers[key];
-      key += ": ";
+      key += ': ';
       if (Array.isArray(value)) {
         for (let i = 0, l=value.length; i < l; ++i) {
           block += key + value[i] + crlf;
@@ -97,7 +97,7 @@ class ICAPResponse extends Response {
 
   _setEncapsulatedHeader(hasBody, headerBlock) {
     const encapsulated = [];
-    let bodyType = "null-body";
+    let bodyType = 'null-body';
     if (this.httpMethodType === 'request') {
       encapsulated.push('req-hdr=0');
       if (hasBody) {
@@ -119,7 +119,7 @@ class ICAPResponse extends Response {
       this.icapHeaders['ISTag'] = currentISTag;
     }
     if (!this.icapHeaders['Server']) {
-      this.icapHeaders['Server'] = "Nodecap/1.0";
+      this.icapHeaders['Server'] = 'Nodecap/1.0';
     }
   }
 

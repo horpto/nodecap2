@@ -1,3 +1,5 @@
+'use strict';
+
 const helpers = require('./spec_helpers');
 
 helpers.testIO('should ignore empty result from fullpage filter', 'empty_filter', (t, server, cb) => {

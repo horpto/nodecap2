@@ -1,3 +1,5 @@
+'use strict';
+
 const helpers = require('./spec_helpers');
 
 helpers.testIO('ICAPRequest should get mime type of preview', 'mime', (t, server, cb) => {

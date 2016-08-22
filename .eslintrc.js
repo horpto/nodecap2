@@ -14,20 +14,20 @@ module.exports = {
             "error",
             2
         ],
-        // TODO: increase to error level
         "linebreak-style": [
-            "off",
+            "error",
             "unix"
         ],
-        // TODO: increase to error level
         "quotes": [
-            "off",
-            "single"
+            "error",
+            "single",
+            {"avoidEscape": true, "allowTemplateLiterals": true}
         ],
         "semi": [
             "error",
             "always"
         ],
+        "strict": ["error", "global"],
 
         /* ES6 FEATURES */
         "object-shorthand": "error",

@@ -1,3 +1,5 @@
+'use strict';
+
 const fs = require('fs');
 const path = require('path');
 const net = require('net');
@@ -53,7 +55,7 @@ function testIO(testName, sampleName, configureFn, configureInput) {
         console.log('client end');
       });
       client.on('error', (err) => {
-        console.error("CLIENT ERROR", err);
+        console.error('CLIENT ERROR', err);
         if (err.stack) {
           console.error(err.stack);
         }
@@ -63,8 +65,8 @@ function testIO(testName, sampleName, configureFn, configureInput) {
         client.end();
         buffer = buffer.replace(datePattern, dateReplace).replace(istagPattern, istagReplace);
         output = output.replace(datePattern, dateReplace).replace(istagPattern, istagReplace);
-        //console.error("BUFFER:", buffer);
-        //console.error("OUTPUT:", output);
+        //console.error('BUFFER:', buffer);
+        //console.error('OUTPUT:', output);
         t.equal(buffer, output, 'should have expected icap responses');
         server.close(() => {
           t.end();

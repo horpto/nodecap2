@@ -1,3 +1,5 @@
+'use strict';
+
 const helpers = require('./spec_helpers');
 
 function replaceWords(icap, pattern, value) {

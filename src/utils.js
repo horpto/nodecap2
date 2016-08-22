@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 let _id = 0;
 function uniqueId() {

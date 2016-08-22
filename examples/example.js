@@ -1,3 +1,5 @@
+'use strict';
+
 const ICAPServer = require('../').ICAPServer;
 const DomainList = require('../').DomainList;
 
@@ -87,7 +89,7 @@ function acceptRequest(icapReq, icapRes, req, res) {
   icapReq.pipe(icapRes);
 }
 
-const errorPage = "page blocked";
+const errorPage = 'page blocked';
 
 //  helper to reject a request/response
 function rejectRequest(icapReq, icapRes, req, res) {

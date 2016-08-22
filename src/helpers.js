@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const url = require('url');
 const querystring = require('querystring');
@@ -9,7 +9,7 @@ const querystring = require('querystring');
 //    index: index in buffer of just past the newline
 //  }
 const readLine = function(buf, start, len) {
-  /*eslint no-var: "off"*/
+  /*eslint no-var: 'off'*/
   start = typeof start !== 'undefined' ? start : 0;
   len = typeof len !== 'undefined' ? len : buf.length;
   for (var ix = start; ix < len; ix++) {
@@ -38,7 +38,7 @@ const readHeader = function(buf, start, len) {
     return null;
   }
   const str = line.str;
-  let delim = str.indexOf(":");
+  let delim = str.indexOf(':');
   if (delim < 0) {
     return null;
   }
@@ -62,10 +62,10 @@ const readHeader = function(buf, start, len) {
 const parseUrlOrAddress = function parseUrlOrAddress(uri) {
   let parsed = url.parse(uri, false);
   if (!parsed.slashes) {
-    const prot = uri.indexOf(':443') > -1 ? "https://" : "http://";
+    const prot = uri.indexOf(':443') > -1 ? 'https://' : 'http://';
     parsed = url.parse(prot + uri, false);
   } else if (!parsed.protocol) {
-    const prot = uri.indexOf(':443') > -1 ? "https:" : "http:";
+    const prot = uri.indexOf(':443') > -1 ? 'https:' : 'http:';
     parsed = url.parse(prot + uri, false);
   }
 

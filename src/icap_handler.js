@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const ICAPError = require('./icap_error');
 const ICAPRequest = require('./icap_request');

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 // use as mixin, not classical inheritance
 module.exports = class Request {

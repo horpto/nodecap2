@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-/*eslint no-var: "off"*/
+/*eslint no-var: 'off'*/
 
 const fs = require('fs');
 const path = require('path');

@@ -1,3 +1,5 @@
+'use strict';
+
 const ICAPServer = require('../').ICAPServer;
 
 //  run the server

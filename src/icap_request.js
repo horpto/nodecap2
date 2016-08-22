@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const EventEmitter = require('eventemitter3');
 const Request = require('./request');

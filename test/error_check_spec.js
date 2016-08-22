@@ -1,3 +1,5 @@
+'use strict';
+
 const helpers = require('./spec_helpers');
 
 helpers.testIO('should call error handlers for bad requests', 'error_check', (t, server, cb) => {
