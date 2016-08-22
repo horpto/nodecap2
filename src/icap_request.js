@@ -1,6 +1,5 @@
 "use strict";
 
-const util = require('util');
 const EventEmitter = require('eventemitter3');
 const Request = require('./request');
 
@@ -13,20 +12,19 @@ try {
   console.warn('Can not import mmmagic');
 }
 
-const ICAPRequest = module.exports = function(id) {
-  Request.call(this);
-  EventEmitter.call(this);
+class ICAPRequest extends Request {
+  constructor(id) {
+    super();
+    EventEmitter.call(this);
 
-  this.id = id;
-  this.stream = null;
-  this.isPrevVersionProto = false;
-  this.preview = null;
-  this.ieof = false;
-  this.done = false;
-};
-util.inherits(ICAPRequest, EventEmitter);
+    this.id = id;
+    this.stream = null;
+    this.isPrevVersionProto = false;
+    this.preview = null;
+    this.ieof = false;
+    this.done = false;
+  }
 
-Object.assign(ICAPRequest.prototype, Request.prototype, {
   push(data) {
     if (!this.stream) {
       // icapReq now are closed;
@@ -42,7 +40,8 @@ Object.assign(ICAPRequest.prototype, Request.prototype, {
       return this.stream.write(data);
     }
     return this.stream.end();
-  },
+  }
+
   pipe(stream) {
     this.stream = stream;
     this.isPrevVersionProto = stream.write == null;
@@ -50,28 +49,35 @@ Object.assign(ICAPRequest.prototype, Request.prototype, {
     if (this.done) {
       this.push(null);
     }
-  },
+  }
+
   hasPreview() {
     return this.headers && 'Preview' in this.headers;
-  },
+  }
+
   hasBody() {
     if (!this.encapsulated || !this.encapsulated.length) {
       return null;
     }
     return this.encapsulated[this.encapsulated.length - 1][0] !== 'null-body';
-  },
+  }
+
   hasPreviewBody() {
     return this.hasPreview() && this.hasBody();
-  },
+  }
+
   isReqMod() {
     return this.method === 'REQMOD';
-  },
+  }
+
   isRespMod() {
     return this.method === 'RESPMOD';
-  },
+  }
+
   isOptions() {
     return this.method === 'OPTIONS';
-  },
+  }
+
   getPreviewMime(cb) {
     if (!this.preview) {
       return cb(null, null);
@@ -81,4 +87,7 @@ Object.assign(ICAPRequest.prototype, Request.prototype, {
     }
     return cb(new Error("'mmmagic' not loaded"), null);
   }
-});
+}
+module.exports = ICAPRequest;
+
+Object.assign(ICAPRequest.prototype, EventEmitter.prototype);

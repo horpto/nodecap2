@@ -24,22 +24,20 @@ let icapHandlerCount = 1;
  *  ICAPHandler
  *    Encapsulates handling of an ICAP client request.
  */
-function ICAPHandler(socket, emitter, options) {
-  this.handlerCount = '' + icapHandlerCount++;
-  this.currentQuery = 0;
-  this.id = '';
-  this.emitter = emitter;
-  this.socket = socket;
-  this.logger = options.logger;
-  this.options = options;
-  this.buffer = new Buffer(0);
+module.exports = class ICAPHandler {
+  constructor(socket, emitter, options) {
+    this.handlerCount = '' + icapHandlerCount++;
+    this.currentQuery = 0;
+    this.id = '';
+    this.emitter = emitter;
+    this.socket = socket;
+    this.logger = options.logger;
+    this.options = options;
+    this.buffer = new Buffer(0);
 
-  this.clearState();
-  this.initialize();
-}
-
-ICAPHandler.prototype = {
-  constructor: ICAPHandler,
+    this.clearState();
+    this.initialize();
+  }
 
   initialize() {
     const socket = this.socket;
@@ -83,15 +81,15 @@ ICAPHandler.prototype = {
       this.emitError(err);
       socket.destroy();
     });
-  },
+  }
 
   emitEvent(eventName) {
     this.emitter.emit(eventName, this.icapRequest, this.icapResponse, this.httpRequest, this.httpResponse);
-  },
+  }
 
   emitError(err) {
     this.emitter.emit('error', err, this.icapRequest, this.icapResponse, this.httpRequest, this.httpResponse);
-  },
+  }
 
   resetState() {
     this.emitEvent('end');
@@ -102,7 +100,7 @@ ICAPHandler.prototype = {
 
     this.buffer = this.buffer.slice(this.bufferIndex, this.buffer.length);
     this.clearState();
-  },
+  }
 
   clearState() {
     this.id = process.pid + ':' + this.handlerCount + ':' + this.currentQuery++;
@@ -117,7 +115,7 @@ ICAPHandler.prototype = {
     this.bufferIndex = 0;
     this.icapBodyStartIndex = 0;
     this.waitOffset = 0;
-  },
+  }
 
   nextState(state, offset) {
     if (!this.nextIfNotDone()) {
@@ -137,7 +135,7 @@ ICAPHandler.prototype = {
         this.socket.destroy();
       }
     }
-  },
+  }
 
   nextIfNotDone() {
     if (this.icapResponse.done) {
@@ -146,7 +144,7 @@ ICAPHandler.prototype = {
       return false;
     }
     return true;
-  },
+  }
 
   nextStateEncapsulated() {
     if (!this.nextIfNotDone()) {
@@ -187,7 +185,7 @@ ICAPHandler.prototype = {
     default:
       throw new ICAPError('Unsupported encapsulated entity: ' + encapsulatedEntity);
     }
-  },
+  }
 
   read(helperMethod) {
     const result = helperMethod(this.buffer, this.bufferIndex);
@@ -196,7 +194,7 @@ ICAPHandler.prototype = {
       delete result.index;
     }
     return result;
-  },
+  }
 
   readChunk() {
     if (!this.chunkSize) {
@@ -230,7 +228,7 @@ ICAPHandler.prototype = {
       };
     }
     return null;
-  },
+  }
 
   readAllHeaders() {
     let header;
@@ -254,7 +252,7 @@ ICAPHandler.prototype = {
       return headers;
     }
     return null;
-  },
+  }
 
   icapmethod() {
     const method = this.read(helpers.method);
@@ -266,7 +264,7 @@ ICAPHandler.prototype = {
     this.logger.verbose('[%s] icapmethod:', this.id, method.line);
     this.emitEvent('icapMethod');
     this.nextState(states.icapheader);
-  },
+  }
 
   icapheader() {
     const headers = this.readAllHeaders();
@@ -301,7 +299,7 @@ ICAPHandler.prototype = {
     default:
       throw new ICAPError(405);
     }
-  },
+  }
 
   requestheader() {
     const method = this.read(helpers.method);
@@ -320,7 +318,7 @@ ICAPHandler.prototype = {
       this.emitEvent('httpRequest');
     }
     this.nextStateEncapsulated();
-  },
+  }
 
   responseheader() {
     const status = this.read(helpers.status);
@@ -339,7 +337,7 @@ ICAPHandler.prototype = {
       this.emitEvent('httpResponse');
     }
     this.nextStateEncapsulated();
-  },
+  }
 
   parsepreview() {
     if (!this.previewBuffer) {
@@ -372,7 +370,7 @@ ICAPHandler.prototype = {
         }
       }
     }
-  },
+  }
 
   parsebody() {
     if (this.previewBuffer) {
@@ -408,5 +406,3 @@ ICAPHandler.prototype = {
     }
   }
 };
-
-module.exports = ICAPHandler;

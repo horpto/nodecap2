@@ -40,15 +40,13 @@ const wildcardStartChar = '\0';
 const wildcardEndChar = '\xFF';
 const wildcardEndChars = [wildcardStartChar, wildcardEndChar];
 
-const DomainList = module.exports = function DomainList(domainList) {
-  domainList = domainList || [];
-  this.matchDomains = [];
-  this.domainExpiry = {};
-  this.addMany(domainList);
-};
-
-DomainList.prototype = {
-  constructor: DomainList,
+module.exports = class DomainList {
+  constructor (domainList) {
+    domainList = domainList || [];
+    this.matchDomains = [];
+    this.domainExpiry = {};
+    this.addMany(domainList);
+  }
 
   contains(domain) {
     var nearIdx, reversed, expireDomain, now, part, match;
@@ -89,12 +87,12 @@ DomainList.prototype = {
     // expired domain
     this.remove(expireDomain);
     return false;
-  },
+  }
 
   clear() {
     this.matchDomains = [];
     this.domainExpiry = {};
-  },
+  }
 
   addMany(domains, ttl) {
     domains = domains || [];
@@ -103,7 +101,7 @@ DomainList.prototype = {
       this.add(domains[ix], ttl, true);
     }
     this.matchDomains.sort();
-  },
+  }
 
   add(domain, ttl, skipSort) {
     domain = (domain || '').trim();
@@ -137,7 +135,7 @@ DomainList.prototype = {
     if (!skipSort) {
       this.matchDomains.sort();
     }
-  },
+  }
 
   remove(domain) {
     domain = (domain || '').trim();
@@ -161,7 +159,7 @@ DomainList.prototype = {
       return toRemove.indexOf(existingDomain) < 0;
     });
     delete this.domainExpiry[fixed];
-  },
+  }
 
   toArray() {
     const domains = [];
@@ -174,22 +172,22 @@ DomainList.prototype = {
     });
     return domains;
   }
-};
 
-/*
- *  DomainList.fromFile(domainFile[, domainList])
- *  @param domainFile: string file path, absolute or relative to cwd
- *  @param domainList: optional domainlist
- *  Create a new DomainList (or use passed domainList) and add all of the domain patterns
- *  contained in domainFile as non-expiring.
- */
-DomainList.fromFile = function(domainFile, domainList) {
-  domainList = domainList || new DomainList();
-  const domainText = fs.readFileSync(path.resolve(process.cwd(), domainFile), 'utf8').trim();
-  if (!domainText) {
-    return null;
+  /*
+   *  DomainList.fromFile(domainFile[, domainList])
+   *  @param domainFile: string file path, absolute or relative to cwd
+   *  @param domainList: optional domainlist
+   *  Create a new DomainList (or use passed domainList) and add all of the domain patterns
+   *  contained in domainFile as non-expiring.
+   */
+  static fromFile(domainFile, domainList) {
+    domainList = domainList || new DomainList();
+    const domainText = fs.readFileSync(path.resolve(process.cwd(), domainFile), 'utf8').trim();
+    if (!domainText) {
+      return null;
+    }
+    const domains = domainText.split('\n');
+    domainList.addMany(domains);
+    return domainList;
   }
-  const domains = domainText.split('\n');
-  domainList.addMany(domains);
-  return domainList;
 };

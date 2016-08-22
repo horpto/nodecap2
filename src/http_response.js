@@ -1,9 +1,9 @@
 "use strict";
 
-const util = require('util');
 const Response = require('./response');
 
-const HTTPResponse = module.exports = function() {
-  Response.call(this, 'HTTP');
+module.exports = class HTTPResponse extends Response {
+  constructor() {
+    super('HTTP');
+  }
 };
-util.inherits(HTTPResponse, Response);

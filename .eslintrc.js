@@ -31,6 +31,7 @@ module.exports = {
 
         /* ES6 FEATURES */
         "object-shorthand": "error",
+        "no-class-assign": "error",
         "no-var": "error",
         "prefer-arrow-callback": "error",
         "prefer-const": "error",

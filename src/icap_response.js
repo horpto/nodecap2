@@ -9,49 +9,48 @@ const currentISTag = "NODECAP-" + (new Date()).getTime();
 const crlf = '\r\n';
 const DEFAULT_CHUNK_SIZE = 4096;
 
-const ICAPResponse = module.exports = function(id, stream, options) {
-  Response.call(this, 'ICAP');
+class ICAPResponse extends Response {
+  constructor(id, stream, options) {
+    super('ICAP');
 
-  options = Object.assign(options || {}, {
-    encoding: null, decodeStrings: true,
-    objectMode: false,
-    read: null, write: null, writev: null});
-  Transform.call(this, options);
+    options = Object.assign(options || {}, {
+      encoding: null, decodeStrings: true,
+      objectMode: false,
+      read: null, write: null, writev: null});
+    Transform.call(this, options);
 
-  this.pipe(stream, {end: false});
+    this.pipe(stream, {end: false});
 
-  this.id = id;
-  this.done = false;
-  this.filter = null;
-  this.sendData = null;
-  this.hasBody = false;
-  this.chunkSize = 'chunkSize' in options ? options.chunkSize : DEFAULT_CHUNK_SIZE;
-  this.icapStatus = null;
-  this.icapHeaders = {};
-  this.httpMethodType = '';
-  this.httpMethod = null;
-  this.httpHeaders = {};
-  this.buffer = null;
-};
-util.inherits(ICAPResponse, Transform);
+    this.id = id;
+    this.done = false;
+    this.filter = null;
+    this.sendData = null;
+    this.hasBody = false;
+    this.chunkSize = 'chunkSize' in options ? options.chunkSize : DEFAULT_CHUNK_SIZE;
+    this.icapStatus = null;
+    this.icapHeaders = {};
+    this.httpMethodType = '';
+    this.httpMethod = null;
+    this.httpHeaders = {};
+    this.buffer = null;
+  }
 
-Object.assign(ICAPResponse.prototype, Response.prototype, {
   _getCode(code, options) {
     code = code || 500;
     options = options || {};
     return [options.version || 'ICAP/1.0', code, codes[code][0]];
-  },
+  }
   setIcapStatusCode(code, options) {
     this.icapStatus = this._getCode(code, options);
-  },
+  }
   setIcapHeaders(headers) {
     // TODO: filter headers???
     this.icapHeaders = Object.assign(this.icapHeaders, headers);
-  },
+  }
   setHttpMethod(options) {
     this.httpMethodType = 'request';
     this.httpMethod = [options.method, options.uri, options.version || 'HTTP/1.1'];
-  },
+  }
   setHttpStatus(code, options) {
     if (typeof code === 'object') {
       options = code;
@@ -61,13 +60,16 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
     options.version = options.version || 'HTTP/1.1';
     this.httpMethodType = 'response';
     this.httpMethod = this._getCode(code, options);
-  },
+  }
+
   setHttpHeaders(headers) {
     this.httpHeaders = Object.assign(this.httpHeaders, headers);
-  },
+  }
+
   hasFilter() {
     return typeof this.filter === 'function';
-  },
+  }
+
   setFilter(callAtEnd, filterFn) {
     if (typeof callAtEnd === 'function') {
       filterFn = callAtEnd;
@@ -75,7 +77,8 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
     }
     this.buffer = callAtEnd ? new Buffer(0) : null;
     this.filter = filterFn;
-  },
+  }
+
   _joinHeaders(status, headers) {
     let block = status.join(' ') + crlf;
     for (let key in headers) {
@@ -90,7 +93,8 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
       }
     }
     return block;
-  },
+  }
+
   _setEncapsulatedHeader(hasBody, headerBlock) {
     const encapsulated = [];
     let bodyType = "null-body";
@@ -107,7 +111,7 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
     }
     encapsulated.push(bodyType + '=' + headerBlock.length);
     this.icapHeaders['Encapsulated'] = encapsulated.join(', ');
-  },
+  }
 
   _checkDefaultIcapHeaders() {
     this.icapHeaders['Date'] = (new Date()).toGMTString();
@@ -117,7 +121,7 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
     if (!this.icapHeaders['Server']) {
       this.icapHeaders['Server'] = "Nodecap/1.0";
     }
-  },
+  }
 
   writeHeaders(hasBody) {
     this.hasBody = hasBody;
@@ -136,19 +140,19 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
     this._checkDefaultIcapHeaders();
     const icapBlock = this._joinHeaders(this.icapStatus, this.icapHeaders);
     this.push(icapBlock + crlf + headerBlock);
-  },
+  }
 
   allowUnchanged() {
     // user should check status 204 is allowed own
     this.setIcapStatusCode(204);
     this.writeHeaders(false);
     this.end();
-  },
+  }
 
   continuePreview() {
     const code = this._getCode(100);
     this.push(code.join(' ') + crlf + crlf);
-  },
+  }
 
   _writeHandyChunk(data) {
     // filter output and abort if no response
@@ -164,7 +168,7 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
     this.push(data.length.toString(16) + crlf);
     this.push(data);
     this.push(crlf);
-  },
+  }
 
   // TODO: more async
   _divideIntoHandyChunks(data, cb) {
@@ -177,7 +181,7 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
       data = data.slice(size);
     }
     return cb();
-  },
+  }
 
   _writeChunk(data, cb) {
     if (this.buffer) {
@@ -190,7 +194,7 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
     }
     this._writeHandyChunk(data);
     return cb();
-  },
+  }
 
   // alert the filter that stream is over
   // can return data to write it before the stream is ended
@@ -204,7 +208,7 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
       }
     }
     this.push('0\r\n\r\n');
-  },
+  }
 
   _transform(data, _, cb) {
     // not write null chunks because they signal about end of stream
@@ -212,7 +216,7 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
       return this._writeChunk(data, cb);
     }
     return cb();
-  },
+  }
 
   // TODO: legacy, remove from next version
   _write(data, enc, cb) {
@@ -225,11 +229,11 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
       return;
     }
     return Transform.prototype._write.call(this, data, enc, cb);
-  },
+  }
 
   send(data) {
     this.sendData = data;
-  },
+  }
 
   _flush(cb) {
     if (this.hasBody) {
@@ -243,4 +247,7 @@ Object.assign(ICAPResponse.prototype, Response.prototype, {
     this.unpipe();
     cb();
   }
-});
+}
+
+util.inherits(ICAPResponse, Transform);
+module.exports = ICAPResponse;
