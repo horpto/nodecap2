@@ -22,8 +22,9 @@ helpers.testIO('should support streams', 'stream', (t, server, cb) => {
 (input) =>{
   const firstCh = zlib.gzipSync('I am posting this information.');
   const secondCh = zlib.gzipSync('I was posting that information.');
+  getChunk = ch => `${ch.length.toString(16)}\r\n${ch.toString('binary')}`;
 
-  input = input.replace('POST_FIRST_CHUNK_HERE', firstCh.length.toString(16) + '\r\n' + firstCh.toString('binary'));
-  input = input.replace('POST_SECOND_CHUNK_HERE', secondCh.length.toString(16) + '\r\n' + secondCh.toString('binary'));
+  input = input.replace('POST_FIRST_CHUNK_HERE', getChunk(firstCh));
+  input = input.replace('POST_SECOND_CHUNK_HERE', getChunk(secondCh));
   return new Buffer(input, 'binary');
 });

@@ -103,7 +103,7 @@ module.exports = class ICAPHandler {
   }
 
   clearState() {
-    this.id = process.pid + ':' + this.handlerCount + ':' + this.currentQuery++;
+    this.id = `${process.pid}:${this.handlerCount}:${this.currentQuery++}`;
     this.state = states.icapmethod;
     this.icapRequest = new ICAPRequest(this.id);
     this.icapResponse = new ICAPResponse(this.id, this.socket, this.options);
@@ -183,7 +183,7 @@ module.exports = class ICAPHandler {
       this.nextState();
       break;
     default:
-      throw new ICAPError('Unsupported encapsulated entity: ' + encapsulatedEntity);
+      throw new ICAPError(`Unsupported encapsulated entity: ${encapsulatedEntity}`);
     }
   }
 
@@ -206,7 +206,7 @@ module.exports = class ICAPHandler {
       const arr = line.str.split(';');
       const chunkSize = parseInt(arr[0], 16);
       if (isNaN(chunkSize)) {
-        throw new ICAPError('Cannot read chunk size' + line.str);
+        throw new ICAPError(`Cannot read chunk size ${line.str}`);
       }
       this.chunkSize = chunkSize;
       if (arr.length > 1 && arr[1] === ' ieof') {
@@ -288,7 +288,7 @@ module.exports = class ICAPHandler {
     case 'REQMOD':
       this.icapRequest.encapsulated = helpers.encapsulated(this.icapRequest.headers['Encapsulated']);
       if (!this.icapRequest.encapsulated || !this.icapRequest.encapsulated.length) {
-        throw new ICAPError('Missing Encapsulated header for: ' + this.icapRequest.method);
+        throw new ICAPError(`Missing Encapsulated header for: ${this.icapRequest.method}`);
       }
       if (this.icapRequest.hasPreviewBody()) {
         this.parsePreview = true;

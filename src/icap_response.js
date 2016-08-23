@@ -4,7 +4,7 @@ const util = require('util');
 const Transform = require('stream').Transform;
 const Response = require('./response');
 const codes = require('./codes');
-const currentISTag = 'NODECAP-' + (new Date()).getTime();
+const currentISTag = `NODECAP-${(new Date()).getTime()}`;
 
 const crlf = '\r\n';
 const DEFAULT_CHUNK_SIZE = 4096;

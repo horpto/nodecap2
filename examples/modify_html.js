@@ -8,7 +8,7 @@ const server = new ICAPServer({
 });
 console.log('Starting ICAP server...');
 server.listen((port) => {
-  console.log('ICAP server listening on port ' + port);
+  console.log(`ICAP server listening on port ${port}`);
 });
 
 //  only configure RESPMOD bc only modifying responses

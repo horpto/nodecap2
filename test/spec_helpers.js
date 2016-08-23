@@ -8,17 +8,17 @@ const exampleConfig = require('./spec_server');
 const ICAPServer = require('..').ICAPServer;
 
 const datePattern = /Date\:\s*\w+,\s+\d{1,2}\s+\w+\s+\d{4}\s+\d{2}:\d{2}:\d{2}\s+GMT/g;
-const dateReplace = 'Date: ' + (new Date()).toGMTString();
+const dateReplace = `Date: ${(new Date()).toGMTString()}`;
 
 const istagPattern = /ISTag\:\s*\S+/g;
 const istagReplace = 'ISTag: NODECAP-TEST';
 
-const sampleDir = 'samples/';
+const sampleDir = 'samples';
 
 function testIO(testName, sampleName, configureFn, configureInput) {
   configureFn = typeof configureFn === 'function' ? configureFn : null;
-  let input = fs.readFileSync(path.resolve(__dirname, sampleDir + sampleName + '.in.txt'), 'utf8');
-  let output = fs.readFileSync(path.resolve(__dirname, sampleDir + sampleName + '.out.txt'), 'utf8');
+  let input = fs.readFileSync(path.resolve(__dirname, `${sampleDir}/${sampleName}.in.txt`), 'utf8');
+  let output = fs.readFileSync(path.resolve(__dirname, `${sampleDir}/${sampleName}.out.txt`), 'utf8');
 
   test(testName, (t) => {
     let buffer = '';

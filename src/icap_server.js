@@ -1,7 +1,6 @@
 'use strict';
 
 const net = require('net');
-const util = require('util');
 const winston = require('winston');
 const EventEmitter = require('eventemitter3');
 const ICAPHandler = require('./icap_handler');
@@ -15,7 +14,7 @@ const noop = require('./utils').noop;
 module.exports = class ICAPServer extends EventEmitter {
   constructor (options) {
     super();
-    this.id = util.format('[%d::server]', process.pid);
+    this.id = `[${process.pid}::server]`;
     this.logger = options.logger || new winston.Logger({
       transports: [
         new winston.transports.Console({
@@ -165,10 +164,10 @@ module.exports = class ICAPServer extends EventEmitter {
     if (!path || path === '*') {
       path = null;
     } else if (!(path instanceof RegExp)) {
-      path = new RegExp('^' + path + '$');
+      path = new RegExp(`^${path}$`);
     }
     if (typeof cb != 'function') {
-      throw new TypeError('expected function, not ' + typeof cb);
+      throw new TypeError(`expected function, not ${typeof cb}`);
     }
     this._optionsCallbacks.push([path, cb]);
   }
@@ -184,7 +183,7 @@ module.exports = class ICAPServer extends EventEmitter {
       domainList.add(domain);
     }
     if (typeof cb != 'function') {
-      throw new TypeError('expected function, not ' + typeof cb);
+      throw new TypeError(`expected function, not ${typeof cb}`);
     }
     this._requestCallbacks.push([domainList, cb]);
   }
@@ -200,7 +199,7 @@ module.exports = class ICAPServer extends EventEmitter {
       domainList.add(domain);
     }
     if (typeof cb != 'function') {
-      throw new TypeError('expected function, not ' + typeof cb);
+      throw new TypeError(`expected function, not ${typeof cb}`);
     }
     this._responseCallbacks.push([domainList, cb]);
   }
