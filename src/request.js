@@ -10,6 +10,32 @@ module.exports = class Request {
     this.version = null;
     this.parsedUri = null;
   }
+  // TODO: more robust support of caseless
+  getHeader(header) {
+    if (!this.headers){
+      return null;
+    }
+    const headerLowerCase = header.toLowerCase();
+
+    for (let name in headers) {
+      if (headerLowerCase == name.toLowerCase()) {
+        return headers[name];
+      }
+    }
+  }
+  setHeader(header, value) {
+    if (!this.headers){
+      this.headers = {};
+    }
+
+    const headerLowerCase = header.toLowerCase();
+    for (let name in headers) {
+      if (headerLowerCase == name.toLowerCase()) {
+        headers[name] = value;
+        return;
+      }
+    }
+  }
   setHeaders(headers) {
     if (!this.headers) {
       this.headers = headers;

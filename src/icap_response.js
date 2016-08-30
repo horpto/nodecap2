@@ -16,7 +16,8 @@ class ICAPResponse extends Response {
     options = Object.assign(options || {}, {
       encoding: null, decodeStrings: true,
       objectMode: false,
-      read: null, write: null, writev: null});
+      read: null, write: null, writev: null
+    });
     Transform.call(this, options);
 
     this.pipe(stream, {end: false});
