@@ -16,8 +16,8 @@ module.exports = class Request {
       return null;
     }
     const headerLowerCase = header.toLowerCase();
-
-    for (let name in headers) {
+    const headers = this.headers;
+    for (const name in headers) {
       if (headerLowerCase == name.toLowerCase()) {
         return headers[name];
       }
@@ -29,9 +29,10 @@ module.exports = class Request {
     }
 
     const headerLowerCase = header.toLowerCase();
-    for (let name in headers) {
+    const headers = this.headers;
+    for (const name in headers) {
       if (headerLowerCase == name.toLowerCase()) {
-        headers[name] = value;
+        this.headers[name] = value;
         return;
       }
     }

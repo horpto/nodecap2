@@ -5,7 +5,8 @@
   "main": "index.js",
   "directories": {
     "example": "examples",
-    "test": "test"
+    "test": "test",
+    "lint": "eslint src/"
   },
   "engine": {
     "node": ">= 4.4.6"
