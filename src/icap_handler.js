@@ -118,15 +118,17 @@ module.exports = class ICAPHandler {
     this.waitOffset = 0;
   }
 
-  nextState(state, offset) {
-    if (!this.nextIfNotDone()) {
-      return;
-    }
-    if (typeof state !== 'undefined' && state !== null) {
-      this.state = state;
-    }
+  changeState(newState, offset) {
+    this.state = newState;
     if (typeof offset === 'number') {
       this.waitOffset = offset + this.icapBodyStartIndex;
+    }
+    this.nextState();
+  }
+
+  nextState() {
+    if (!this.nextIfNotDone()) {
+      return;
     }
     if (this.waitOffset <= this.buffer.length) {
       try {
@@ -157,24 +159,24 @@ module.exports = class ICAPHandler {
       if (!encapsulated.length) {
         throw new ICAPError('No body offset for req-hdr');
       }
-      this.nextState(states.requestheader, encapsulated[0][1]);
+      this.changeState(states.requestheader, encapsulated[0][1]);
       break;
     case 'res-hdr':
       if (!encapsulated.length) {
         throw new ICAPError('No body offset for res-hdr');
       }
-      this.nextState(states.responseheader, encapsulated[0][1]);
+      this.changeState(states.responseheader, encapsulated[0][1]);
       break;
     case 'req-body':
     case 'res-body':
       if (this.parsePreview) {
         encapsulated.unshift(encapsulatedEntity);
-        this.nextState(states.parsepreview);
+        this.changeState(states.parsepreview);
         break;
       }
 
       this.emitEvent(this.icapRequest.isReqMod() ? 'httpRequestBody' : 'httpResponseBody');
-      this.nextState(states.parsebody, 0);
+      this.changeState(states.parsebody, 0);
       break;
     case 'null-body':
       this.emitEvent(this.icapRequest.isReqMod() ? 'httpRequestNullBody' : 'httpResponseNullBody');
@@ -263,7 +265,7 @@ module.exports = class ICAPHandler {
 
     this.logger.verbose('[%s] icapmethod:', this.id, method.line);
     this.emitEvent('icapMethod');
-    this.nextState(states.icapheader);
+    this.changeState(states.icapheader);
   }
 
   icapheader() {
