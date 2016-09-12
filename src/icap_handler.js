@@ -100,6 +100,7 @@ module.exports = class ICAPHandler {
 
     this.buffer = this.buffer.slice(this.bufferIndex, this.buffer.length);
     this.clearState();
+    this.nextState();
   }
 
   clearState() {
@@ -140,7 +141,6 @@ module.exports = class ICAPHandler {
   nextIfNotDone() {
     if (this.icapResponse.done) {
       this.resetState();
-      this.nextState();
       return false;
     }
     return true;
@@ -150,24 +150,25 @@ module.exports = class ICAPHandler {
     if (!this.nextIfNotDone()) {
       return;
     }
-    const encapsulatedEntity = this.icapRequest.encapsulated.shift();
+    const encapsulated = this.icapRequest.encapsulated;
+    const encapsulatedEntity = encapsulated.shift();
     switch (encapsulatedEntity[0]) {
     case 'req-hdr':
-      if (!this.icapRequest.encapsulated.length) {
+      if (!encapsulated.length) {
         throw new ICAPError('No body offset for req-hdr');
       }
-      this.nextState(states.requestheader, this.icapRequest.encapsulated[0][1]);
+      this.nextState(states.requestheader, encapsulated[0][1]);
       break;
     case 'res-hdr':
-      if (!this.icapRequest.encapsulated.length) {
+      if (!encapsulated.length) {
         throw new ICAPError('No body offset for res-hdr');
       }
-      this.nextState(states.responseheader, this.icapRequest.encapsulated[0][1]);
+      this.nextState(states.responseheader, encapsulated[0][1]);
       break;
     case 'req-body':
     case 'res-body':
       if (this.parsePreview) {
-        this.icapRequest.encapsulated.unshift(encapsulatedEntity);
+        encapsulated.unshift(encapsulatedEntity);
         this.nextState(states.parsepreview);
         break;
       }
@@ -180,7 +181,6 @@ module.exports = class ICAPHandler {
       this.logger.debug('[%s] null-body]', this.id);
       this.icapRequest.push(null);
       this.resetState();
-      this.nextState();
       break;
     default:
       throw new ICAPError(`Unsupported encapsulated entity: ${encapsulatedEntity}`);
@@ -281,7 +281,6 @@ module.exports = class ICAPHandler {
     case 'OPTIONS':
       this.emitEvent('icapOptions');
       this.resetState();
-      this.nextState();
       break;
 
     case 'RESPMOD':
@@ -381,7 +380,6 @@ module.exports = class ICAPHandler {
     if (this.icapRequest.ieof) {
       this.icapRequest.push(null);
       this.resetState();
-      this.nextState();
       return;
     }
     let body;
@@ -394,7 +392,6 @@ module.exports = class ICAPHandler {
         this.logger.debug('[%s] parsebody eof', this.id);
         this.icapRequest.push(null);
         this.resetState();
-        this.nextState();
         break;
       }
     }
