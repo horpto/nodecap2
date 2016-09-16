@@ -242,7 +242,6 @@ assign(ICAPResponse.prototype, Response.prototype, {
       this._streamIsOver();
     }
     this.done = true;
-    this.unpipe();
     cb();
   }
 });
