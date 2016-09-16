@@ -232,7 +232,6 @@ class ICAPResponse extends Response {
       this._streamIsOver();
     }
     this.done = true;
-    this.unpipe();
     cb();
   }
 }
