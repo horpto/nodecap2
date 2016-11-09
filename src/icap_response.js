@@ -41,7 +41,9 @@ assign(ICAPResponse.prototype, Response.prototype, {
   _getCode: function(code, options) {
     code = code || 500;
     options = options || {};
-    return [options.version || 'ICAP/1.0', code, codes[code][0]];
+    var description = codes[code];
+    description = description ? description[0] : "Unknown";
+    return [options.version || 'ICAP/1.0', code, description];
   },
   setIcapStatusCode: function(code, options) {
     this.icapStatus = this._getCode(code, options);
