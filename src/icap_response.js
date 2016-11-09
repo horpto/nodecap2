@@ -39,7 +39,9 @@ class ICAPResponse extends Response {
   _getCode(code, options) {
     code = code || 500;
     options = options || {};
-    return [options.version || 'ICAP/1.0', code, codes[code][0]];
+    let description = codes[code];
+    description = description ? description[0] : "Unknown";
+    return [options.version || 'ICAP/1.0', code, description];
   }
   setIcapStatusCode(code, options) {
     this.icapStatus = this._getCode(code, options);

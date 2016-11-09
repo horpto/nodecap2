@@ -53,7 +53,7 @@ module.exports = class ICAPServer extends EventEmitter {
       } catch (e) {
         try {
           icapRes.end();
-          this.logger.error("%s ERROR '%s'", this.id, e.message || 'Unknown Error');
+          this.logger.error("%s ERROR '%s'", this.id, e.stack);
         } catch (ee) {
           // can't do anything
         }
